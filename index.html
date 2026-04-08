@@ -217,7 +217,7 @@ tbody tr:hover td{background:var(--surface2)}
 <body>
 
 <!-- SETUP -->
-<div id="setup-screen" class="setup-screen">
+<div id="setup-screen" class="setup-screen" style="display:none">
   <div class="setup-card">
     <div class="setup-title">Configuração inicial</div>
     <p class="setup-sub">Para sincronizar os dados na nuvem gratuitamente, você precisará de um projeto Firebase. Siga os passos abaixo uma única vez.</p>
@@ -263,7 +263,7 @@ tbody tr:hover td{background:var(--surface2)}
 </div>
 
 <!-- APP -->
-<div id="main-app" class="app" style="display:none">
+<div id="main-app" class="app">
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-text" id="loja-nome-side">Minha Loja</div>
@@ -689,7 +689,7 @@ tbody tr:hover td{background:var(--surface2)}
             <button class="btn btn-green" onclick="exportBackup()">Baixar backup JSON</button>
             <div class="sep"></div>
             <div class="card-title">Firebase</div>
-            <button class="btn btn-red" onclick="resetFirebase()">Reconfigurar Firebase</button>
+            <p style="font-size:11px;color:var(--text3)">Projeto: <strong style="font-family:var(--mono)">point-da-bebida</strong></p>
           </div>
         </div>
       </div>
@@ -1722,15 +1722,20 @@ window.exportBackup=function(){
 };
 
 // INIT
-const fbRaw=localStorage.getItem('fb_cfg');
-if(fbRaw){
-  try{
-    db=getFirestore(initializeApp(JSON.parse(fbRaw)));
-    qs('setup-screen').style.display='none';qs('main-app').style.display='flex';
-    setConn(true);carregarTudo();atualizarData();setInterval(atualizarData,30000);
-    qs('l-data').value=hoje();qs('fech-data').value=hoje();
-  }catch(e){console.error(e);setConn(false)}
-}
+// Credenciais Firebase embutidas — seguro por design (Firebase Web SDK)
+const FB_CONFIG = {
+  apiKey: "AIzaSyCZLq-fxhRu-g4eJHvpv0i3otTn8zqR8RQ",
+  authDomain: "point-da-bebida.firebaseapp.com",
+  projectId: "point-da-bebida",
+  appId: "1:594734488483:web:29019e080828098d119816"
+};
+try{
+  db=getFirestore(initializeApp(FB_CONFIG));
+  qs('setup-screen').style.display='none';
+  qs('main-app').style.display='flex';
+  setConn(true);carregarTudo();atualizarData();setInterval(atualizarData,30000);
+  qs('l-data').value=hoje();qs('fech-data').value=hoje();
+}catch(e){console.error(e);setConn(false);}
 </script>
 </body>
 </html>
