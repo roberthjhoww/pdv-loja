@@ -1,6 +1,8 @@
 import { state } from './state.js';
 import { fmt, fmtDate, qs, toast, hoje } from './utils.js';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from './firebase.js';
+import { renderProdutos } from './produtos.js';
+import { renderLancamentos, atualizarMetricasFinanceiro } from './financeiro.js';
 
 export function atualizarMetricasEstoque() {
   if (!qs('e-total')) return;
@@ -63,11 +65,25 @@ export function renderMov() {
 }
 
 window.delMov = async function (id) {
-  if (!confirm('Excluir este registro de movimentação?')) return;
+  if (!confirm('Excluir este registro de movimentação? O estoque do produto será ajustado.')) return;
+  const mov = state.MOVS.find(m => m.id === id);
+  if (!mov) return;
+  const p = state.PRODS.find(x => x.id === mov.produtoId);
   try {
     await deleteDoc(doc(state.db, 'movimentacoes', id));
     state.MOVS = state.MOVS.filter(m => m.id !== id);
-    renderMov(); toast('Movimentação excluída');
+    if (p) {
+      const delta = mov.tipo === 'entrada' ? -mov.qtd : mov.qtd;
+      p.estoque = Math.max(0, p.estoque + delta);
+      await updateDoc(doc(state.db, 'produtos', p.id), { estoque: p.estoque });
+    }
+    if (mov.lancamentoId) {
+      await deleteDoc(doc(state.db, 'lancamentos', mov.lancamentoId));
+      state.LANCS = state.LANCS.filter(l => l.id !== mov.lancamentoId);
+      renderLancamentos(); atualizarMetricasFinanceiro();
+    }
+    renderMov(); renderEstoque(); atualizarMetricasEstoque(); renderProdutos();
+    toast('Movimentação excluída' + (p ? ` · estoque de "${p.nome}" ajustado` : ''));
   } catch (e) { toast('Erro: ' + e.message, true); }
 };
 
@@ -100,11 +116,14 @@ window.entradaEstoque = async function () {
     const custoMov = custo > 0 ? custo : (p.custoMedio || p.custo || 0);
     const mov = { data: hoje(), produtoId: id, produtoNome: p.nome, tipo: 'entrada', qtd, custo: custoMov, obs: 'Entrada manual' + (custo ? ` · custo ${fmt(custo)}` : '') };
     const mRef = await addDoc(collection(state.db, 'movimentacoes'), mov);
-    state.MOVS.push({ id: mRef.id, ...mov });
+    let movLocal = { id: mRef.id, ...mov };
+    state.MOVS.push(movLocal);
     if (custo > 0) {
       const lan = { data: hoje(), tipo: 'des', desc: 'Compra estoque: ' + p.nome, cat: 'Fornecedor', valor: custo * qtd, pag: '', obs: '' };
       const lRef = await addDoc(collection(state.db, 'lancamentos'), lan);
       state.LANCS.push({ id: lRef.id, ...lan });
+      movLocal.lancamentoId = lRef.id;
+      await updateDoc(doc(state.db, 'movimentacoes', mRef.id), { lancamentoId: lRef.id });
       const hc = { data: hoje(), produtoId: id, produtoNome: p.nome, custo, qtd, custoMedio: p.custoMedio };
       await addDoc(collection(state.db, 'hist_custo'), hc);
     }
