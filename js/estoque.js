@@ -7,7 +7,13 @@ export function atualizarMetricasEstoque() {
   qs('e-total').textContent = state.PRODS.length;
   qs('e-baixo').textContent = state.PRODS.filter(p => p.estoque > 0 && p.estoque <= (p.estoqueMin || 5)).length;
   qs('e-zero').textContent  = state.PRODS.filter(p => p.estoque <= 0).length;
-  qs('e-valor').textContent = fmt(state.PRODS.reduce((a, p) => a + (p.custo || 0) * p.estoque, 0));
+  const valorEstoque = state.MOVS.reduce((acc, m) => {
+    const p = state.PRODS.find(x => x.id === m.produtoId);
+    const custo = m.custo ?? (p ? (p.custoMedio || p.custo || 0) : 0);
+    const valor = m.qtd * custo;
+    return m.tipo === 'entrada' ? acc + valor : acc - valor;
+  }, 0);
+  qs('e-valor').textContent = fmt(Math.max(0, valorEstoque));
 }
 
 export function renderEstoque() {
@@ -91,7 +97,8 @@ window.entradaEstoque = async function () {
   if (custo > 0) { p.custo = custo; p.custoMedio = parseFloat(novoCustoMedio.toFixed(4)); upd.custo = custo; upd.custoMedio = p.custoMedio; }
   try {
     await updateDoc(doc(state.db, 'produtos', id), upd);
-    const mov = { data: hoje(), produtoId: id, produtoNome: p.nome, tipo: 'entrada', qtd, obs: 'Entrada manual' + (custo ? ` · custo ${fmt(custo)}` : '') };
+    const custoMov = custo > 0 ? custo : (p.custoMedio || p.custo || 0);
+    const mov = { data: hoje(), produtoId: id, produtoNome: p.nome, tipo: 'entrada', qtd, custo: custoMov, obs: 'Entrada manual' + (custo ? ` · custo ${fmt(custo)}` : '') };
     const mRef = await addDoc(collection(state.db, 'movimentacoes'), mov);
     state.MOVS.push({ id: mRef.id, ...mov });
     if (custo > 0) {
@@ -118,7 +125,7 @@ window.zerarEstoque = async function (id) {
     const qtdAnterior = p.estoque;
     await updateDoc(doc(state.db, 'produtos', id), { estoque: 0 });
     p.estoque = 0;
-    const mov = { data: hoje(), produtoId: id, produtoNome: p.nome, tipo: 'saida', qtd: qtdAnterior, obs: 'Estoque zerado manualmente' };
+    const mov = { data: hoje(), produtoId: id, produtoNome: p.nome, tipo: 'saida', qtd: qtdAnterior, custo: p.custoMedio || p.custo || 0, obs: 'Estoque zerado manualmente' };
     const mRef = await addDoc(collection(state.db, 'movimentacoes'), mov);
     state.MOVS.push({ id: mRef.id, ...mov });
     toast('Estoque zerado!');

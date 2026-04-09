@@ -263,7 +263,7 @@ window.finalizarVenda = async function () {
             const baixa = comp.qtd * ci.qty;
             p.estoque = Math.max(0, p.estoque - baixa);
             await updateDoc(doc(state.db, 'produtos', p.id), { estoque: p.estoque });
-            const mov = { data: hoje(), produtoId: p.id, produtoNome: p.nome, tipo: 'saida', qtd: baixa, obs: 'Venda combo: ' + ci.nome };
+            const mov = { data: hoje(), produtoId: p.id, produtoNome: p.nome, tipo: 'saida', qtd: baixa, custo: p.custoMedio || p.custo || 0, obs: 'Venda combo: ' + ci.nome };
             const mRef = await addDoc(collection(state.db, 'movimentacoes'), mov);
             state.MOVS.push({ id: mRef.id, ...mov });
           }
@@ -273,7 +273,7 @@ window.finalizarVenda = async function () {
         if (p) {
           p.estoque = Math.max(0, p.estoque - ci.qty);
           await updateDoc(doc(state.db, 'produtos', p.id), { estoque: p.estoque });
-          const mov = { data: hoje(), produtoId: p.id, produtoNome: p.nome, tipo: 'saida', qtd: ci.qty, obs: 'Venda PDV' };
+          const mov = { data: hoje(), produtoId: p.id, produtoNome: p.nome, tipo: 'saida', qtd: ci.qty, custo: p.custoMedio || p.custo || 0, obs: 'Venda PDV' };
           const mRef = await addDoc(collection(state.db, 'movimentacoes'), mov);
           state.MOVS.push({ id: mRef.id, ...mov });
         }
