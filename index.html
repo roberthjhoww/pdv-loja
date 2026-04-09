@@ -476,14 +476,14 @@ tbody tr:hover td{background:var(--surface2)}
             <div class="card-title">Posição atual</div>
             <input type="text" id="est-busca" placeholder="Filtrar produto..." style="margin-bottom:13px" oninput="renderEstoque()">
             <div style="max-height:380px;overflow-y:auto">
-              <table><thead><tr><th>Produto</th><th>Código</th><th>Estoque</th><th>Mín.</th><th>Custo</th><th>Venda</th><th>Margem</th><th>Status</th></tr></thead>
+              <table><thead><tr><th>Produto</th><th>Código</th><th>Estoque</th><th>Mín.</th><th>Custo</th><th>Venda</th><th>Margem</th><th>Status</th><th></th></tr></thead>
               <tbody id="tb-estoque"></tbody></table>
             </div>
           </div>
           <div class="card">
             <div class="card-title">Histórico de movimentações</div>
             <div style="max-height:420px;overflow-y:auto">
-              <table><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Qtd</th><th>Obs.</th></tr></thead>
+              <table><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Qtd</th><th>Obs.</th><th></th></tr></thead>
               <tbody id="tb-mov"></tbody></table>
             </div>
           </div>
@@ -1251,22 +1251,43 @@ function renderEstoque(){
     else if(p.estoque<=(p.estoqueMin||5)){badge='badge-low';bt='Baixo'}
     const margem=p.custo&&p.venda?Math.round((p.venda-p.custo)/p.venda*100):0;
     const cm=p.custoMedio||p.custo||0;
-    return `<tr><td><strong>${p.nome}</strong><br><span class="badge ${p.tipo==='insumo'?'badge-insumo':'badge-produto'}" style="font-size:18px">${p.tipo==='insumo'?'Insumo':'Produto'}</span></td><td style="font-family:var(--mono);font-size:16px">${p.codigo||'—'}</td><td style="font-family:var(--mono)"><strong>${p.estoque}</strong> ${p.unidade||'un'}</td><td style="font-family:var(--mono)">${p.estoqueMin||5}</td><td style="font-family:var(--mono)">${fmt(p.custo||0)}<span class="custo-medio-badge" title="Custo médio ponderado">CM: ${fmt(cm)}</span></td><td style="font-family:var(--mono)">${fmt(p.venda)}</td><td style="font-family:var(--mono);color:${margem>30?'var(--green)':'var(--amber)'}">${margem}%</td><td><span class="badge ${badge}">${bt}</span></td></tr>`;
+    return `<tr><td><strong>${p.nome}</strong><br><span class="badge ${p.tipo==='insumo'?'badge-insumo':'badge-produto'}" style="font-size:18px">${p.tipo==='insumo'?'Insumo':'Produto'}</span></td><td style="font-family:var(--mono);font-size:16px">${p.codigo||'—'}</td><td style="font-family:var(--mono)"><strong>${p.estoque}</strong> ${p.unidade||'un'}</td><td style="font-family:var(--mono)">${p.estoqueMin||5}</td><td style="font-family:var(--mono)">${fmt(p.custo||0)}<span class="custo-medio-badge" title="Custo médio ponderado">CM: ${fmt(cm)}</span></td><td style="font-family:var(--mono)">${fmt(p.venda)}</td><td style="font-family:var(--mono);color:${margem>30?'var(--green)':'var(--amber)'}">${margem}%</td><td><span class="badge ${badge}">${bt}</span></td><td><button class="btn btn-sm btn-red" onclick="zerarEstoque('${p.id}')">Zerar</button></td></tr>`;
   }).join('');
 }
+window.zerarEstoque=async function(id){
+  if(!confirm('Zerar estoque deste produto? O valor vai para 0.'))return;
+  const p=PRODS.find(x=>x.id===id);if(!p)return;
+  try{
+    await updateDoc(doc(db,'produtos',id),{estoque:0});
+    p.estoque=0;
+    const mov={data:hoje(),produtoId:id,produtoNome:p.nome,tipo:'saida',qtd:p.estoque,obs:'Estoque zerado manualmente'};
+    const mRef=await addDoc(collection(db,'movimentacoes'),mov);MOVS.push({id:mRef.id,...mov});
+    toast('Estoque zerado!');
+    renderEstoque();renderMov();atualizarMetricasEstoque();atualizarAlertaEstoque();
+  }catch(e){toast('Erro: '+e.message,true)}
+};
 window.renderEstoque=renderEstoque;
 function renderMov(){
   const tb=qs('tb-mov');if(!tb)return;
   const lista=[...MOVS].sort((a,b)=>b.data.localeCompare(a.data)).slice(0,80);
-  if(!lista.length){tb.innerHTML='<tr><td colspan="5" class="empty">Nenhuma movimentação</td></tr>';return}
+  if(!lista.length){tb.innerHTML='<tr><td colspan="6" class="empty">Nenhuma movimentação</td></tr>';return}
   tb.innerHTML=lista.map(m=>`<tr>
     <td style="font-family:var(--mono);font-size:16px">${fmtDate(m.data)}</td>
     <td>${m.produtoNome||'—'}</td>
     <td><span class="badge ${m.tipo==='entrada'?'badge-rec':'badge-des'}">${m.tipo==='entrada'?'Entrada':'Saída'}</span></td>
     <td style="font-family:var(--mono)">${m.qtd}</td>
     <td style="font-size:17px;color:var(--text3)">${m.obs||''}</td>
+    <td><button class="btn btn-sm btn-red" onclick="delMov('${m.id}')">×</button></td>
   </tr>`).join('');
 }
+window.delMov=async function(id){
+  if(!confirm('Excluir este registro de movimentação?'))return;
+  try{
+    await deleteDoc(doc(db,'movimentacoes',id));
+    MOVS=MOVS.filter(m=>m.id!==id);
+    renderMov();toast('Movimentação excluída');
+  }catch(e){toast('Erro: '+e.message,true)}
+};
 function atualizarSelectProd(){
   const sel=qs('ent-prod');if(!sel)return;
   const prev=sel.value;
