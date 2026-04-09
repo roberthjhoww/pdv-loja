@@ -1,0 +1,35 @@
+<div class="page" id="page-estoque">
+  <div class="page-title">Estoque</div>
+  <div class="g4 mb16">
+    <div class="metric"><div class="metric-label">Total produtos</div><div class="metric-value" id="e-total">—</div></div>
+    <div class="metric"><div class="metric-label">Estoque baixo</div><div class="metric-value" id="e-baixo" style="color:var(--amber)">—</div></div>
+    <div class="metric"><div class="metric-label">Sem estoque</div><div class="metric-value" id="e-zero" style="color:var(--red)">—</div></div>
+    <div class="metric"><div class="metric-label">Valor em estoque</div><div class="metric-value" id="e-valor">—</div></div>
+  </div>
+  <div class="card mb12">
+    <div class="card-title">Entrada de estoque</div>
+    <div class="row">
+      <div class="field"><label>Produto</label><select id="ent-prod"><option value="">Selecione...</option></select></div>
+      <div class="field" style="max-width:80px"><label>Qtd</label><input type="number" id="ent-qtd" min="1" value="1"></div>
+      <div class="field" style="max-width:110px"><label>Custo unit. R$</label><input type="number" id="ent-custo" placeholder="0,00" step="0.01"></div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:10px"><button class="btn btn-dark" onclick="entradaEstoque()">Registrar entrada</button></div>
+    </div>
+  </div>
+  <div class="g2 mb12">
+    <div class="card">
+      <div class="card-title">Posição atual</div>
+      <input type="text" id="est-busca" placeholder="Filtrar produto..." style="margin-bottom:13px" oninput="renderEstoque()">
+      <div style="max-height:380px;overflow-y:auto">
+        <table><thead><tr><th>Produto</th><th>Código</th><th>Estoque</th><th>Mín.</th><th>Custo</th><th>Venda</th><th>Margem</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-estoque"></tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Histórico de movimentações</div>
+      <div style="max-height:420px;overflow-y:auto">
+        <table><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Qtd</th><th>Obs.</th><th></th></tr></thead>
+        <tbody id="tb-mov"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>

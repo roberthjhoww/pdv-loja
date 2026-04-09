@@ -1,0 +1,56 @@
+<div class="page" id="page-produtos">
+  <div class="page-title">Cadastro de Produtos</div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title" id="prod-form-title">Novo produto</div>
+      <div class="row">
+        <div class="field" style="flex:2"><label>Nome</label><input type="text" id="p-nome" placeholder="Ex: Feijão Carioca 1kg"></div>
+        <div class="field">
+          <label>Códigos de barras / SKU</label>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input type="text" id="p-codigo-novo" placeholder="7891234..." style="font-family:var(--mono);flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addCodigoProd()}">
+            <button class="btn btn-sm btn-dark" onclick="addCodigoProd()" type="button">+ Add</button>
+          </div>
+          <div id="p-codigos-lista" style="display:flex;flex-wrap:wrap;gap:5px;min-height:24px"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Tipo</label>
+          <select id="p-tipo"><option value="produto">Produto (revenda)</option><option value="insumo">Insumo (uso interno)</option></select>
+        </div>
+        <div class="field"><label>Categoria</label>
+          <select id="p-cat"><option>Grãos e cereais</option><option>Bebidas</option><option>Laticínios</option><option>Higiene pessoal</option><option>Limpeza</option><option>Snacks</option><option>Enlatados</option><option>Temperos</option><option>Insumos</option><option>Outros</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Unidade</label>
+          <select id="p-unid"><option>un</option><option>kg</option><option>L</option><option>pct</option><option>cx</option><option>dz</option><option>g</option><option>ml</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Custo (R$)</label><input type="number" id="p-custo" placeholder="0,00" step="0.01"></div>
+        <div class="field"><label>Venda (R$)</label><input type="number" id="p-venda" placeholder="0,00" step="0.01"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Estoque inicial</label><input type="number" id="p-estoque" value="0"></div>
+        <div class="field"><label>Estoque mínimo</label><input type="number" id="p-min" value="5"></div>
+      </div>
+      <input type="hidden" id="p-editid">
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-dark" style="flex:1" onclick="salvarProduto()">Salvar produto</button>
+        <button class="btn" onclick="cancelEdit()">Cancelar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:13px">
+        <div class="card-title" style="margin:0">Produtos cadastrados</div>
+        <span class="badge badge-gray" id="prod-count">0</span>
+      </div>
+      <input type="text" id="p-busca" placeholder="Buscar..." style="margin-bottom:10px" oninput="renderProdutos()">
+      <div style="max-height:480px;overflow-y:auto">
+        <table><thead><tr><th>Produto</th><th>Tipo</th><th>Código</th><th>Custo médio</th><th>Venda</th><th>Estoque</th><th>Fav.</th><th></th></tr></thead>
+        <tbody id="tb-prods"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>

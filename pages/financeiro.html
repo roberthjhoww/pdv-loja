@@ -1,0 +1,42 @@
+<div class="page" id="page-financeiro">
+  <div class="page-title">Financeiro</div>
+  <div class="g4 mb16">
+    <div class="metric"><div class="metric-label">Receitas do mês</div><div class="metric-value" id="f-rec" style="color:var(--green)">—</div></div>
+    <div class="metric"><div class="metric-label">Despesas do mês</div><div class="metric-value" id="f-des" style="color:var(--red)">—</div></div>
+    <div class="metric"><div class="metric-label">Saldo do mês</div><div class="metric-value" id="f-sal">—</div></div>
+    <div class="metric"><div class="metric-label">Lançamentos</div><div class="metric-value" id="f-qtd">—</div></div>
+  </div>
+  <div class="g2 mb12">
+    <div class="card">
+      <div class="card-title">Novo lançamento</div>
+      <div class="field"><label>Tipo</label><select id="l-tipo" onchange="toggleCats()"><option value="des">Despesa (saída)</option><option value="rec">Receita (entrada manual)</option></select></div>
+      <div class="tag-wrap" id="l-cats"></div>
+      <div class="field"><label>Descrição</label><input type="text" id="l-desc" placeholder="Ex: Aluguel de outubro"></div>
+      <div class="row">
+        <div class="field"><label>Valor (R$)</label><input type="number" id="l-val" placeholder="0,00" step="0.01"></div>
+        <div class="field"><label>Data</label><input type="date" id="l-data"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Forma pagamento</label><select id="l-pag"><option>Dinheiro</option><option>PIX</option><option>Boleto</option><option>Cartão crédito</option><option>Cartão débito</option><option>Transferência</option></select></div>
+        <div class="field"><label>Obs.</label><input type="text" id="l-obs" placeholder="Opcional"></div>
+      </div>
+      <button class="btn btn-dark btn-full" onclick="addLancamento()">Registrar</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Despesas por categoria</div>
+      <div id="chart-cat"><div class="empty">Sem dados</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px">
+      <div class="card-title" style="margin:0">Lançamentos</div>
+      <div style="display:flex;gap:8px">
+        <select id="f-mes" onchange="renderLancamentos()" style="font-size:14px;padding:5px 7px"></select>
+        <select id="f-tipo-fil" onchange="renderLancamentos()" style="font-size:14px;padding:5px 7px"><option value="">Todos</option><option value="rec">Receitas</option><option value="des">Despesas</option></select>
+        <button class="btn btn-sm" onclick="exportCSV()">CSV</button>
+      </div>
+    </div>
+    <table><thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th>Cat.</th><th>Forma pag.</th><th>Valor</th><th></th></tr></thead>
+    <tbody id="tb-lanc"></tbody></table>
+  </div>
+</div>

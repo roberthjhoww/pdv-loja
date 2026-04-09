@@ -1,0 +1,46 @@
+<div class="page" id="page-combos">
+  <div class="page-title">Combos</div>
+  <div class="g2 mb12">
+    <div class="card">
+      <div class="card-title" id="combo-form-title">Novo combo</div>
+      <div class="row">
+        <div class="field" style="flex:2"><label>Nome do combo</label><input type="text" id="cb-nome" placeholder="Ex: Combo Drink 400ml"></div>
+        <div class="field"><label>Código / SKU</label><input type="text" id="cb-codigo" placeholder="Opcional" style="font-family:var(--mono)"></div>
+      </div>
+      <div class="field"><label>Preço de venda (R$)</label><input type="number" id="cb-venda" placeholder="0,00" step="0.01" oninput="calcCustoCombo()"></div>
+      <div class="sep"></div>
+      <div class="card-title">Componentes</div>
+      <div class="row" style="align-items:flex-end">
+        <div class="field" style="flex:2"><label>Item (produto ou insumo)</label><select id="cb-item-sel"><option value="">Selecione...</option></select></div>
+        <div class="field" style="max-width:80px"><label>Qtd</label><input type="number" id="cb-item-qtd" value="1" min="0.01" step="0.01"></div>
+        <div style="padding-bottom:10px"><button class="btn btn-dark" onclick="addItemCombo()">+ Adicionar</button></div>
+      </div>
+      <div id="combo-itens-lista"></div>
+      <div class="sep"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+        <span style="font-size:14px;color:var(--text2)">Custo total do combo</span>
+        <span id="cb-custo-total" style="font-family:var(--mono);font-size:14px;font-weight:500;color:var(--red)">R$ 0,00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+        <span style="font-size:14px;color:var(--text2)">Margem de lucro</span>
+        <span id="cb-margem" style="font-family:var(--mono);font-size:14px;font-weight:500">—</span>
+      </div>
+      <input type="hidden" id="cb-editid">
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-dark" style="flex:1" onclick="salvarCombo()">Salvar combo</button>
+        <button class="btn" onclick="cancelEditCombo()">Cancelar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:13px">
+        <div class="card-title" style="margin:0">Combos cadastrados</div>
+        <span class="badge badge-gray" id="combo-count">0</span>
+      </div>
+      <input type="text" id="cb-busca" placeholder="Buscar combo..." style="margin-bottom:10px" oninput="renderCombos()">
+      <div style="max-height:520px;overflow-y:auto">
+        <table><thead><tr><th>Combo</th><th>Componentes</th><th>Custo</th><th>Venda</th><th>Margem</th><th></th></tr></thead>
+        <tbody id="tb-combos"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>

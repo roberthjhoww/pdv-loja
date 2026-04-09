@@ -1,0 +1,12 @@
+Quebre o arquivo /Users/pablosantos/Development/projects/pdv-loja/index.html em sesções para cada seção quero um arquivo html para melhorar a organização.
+ Uma pagina para as seções:
+  PDV + painel caixa (represetam a mesma tela/arquivo, apena visualzação diferente.) 
+  Fechamento
+  Estoque
+  Fiado
+  Financeiro
+  Relatórios 
+  Produtos
+  Combos 
+  Configurações
+e coloque os arquivos javascript em uma pasta separada e reutlize a funções que der.

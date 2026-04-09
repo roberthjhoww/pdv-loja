@@ -1,0 +1,43 @@
+<div class="page" id="page-relatorios">
+  <div class="page-title">Relatórios</div>
+  <div class="g4 mb16">
+    <div class="metric"><div class="metric-label">Vendas hoje</div><div class="metric-value" id="r-hj">—</div></div>
+    <div class="metric"><div class="metric-label">Faturamento hoje</div><div class="metric-value" id="r-fat-hj" style="color:var(--green)">—</div></div>
+    <div class="metric"><div class="metric-label">Vendas no mês</div><div class="metric-value" id="r-mes">—</div></div>
+    <div class="metric"><div class="metric-label">Faturamento mês</div><div class="metric-value" id="r-fat-mes" style="color:var(--green)">—</div></div>
+  </div>
+  <div class="g4 mb16">
+    <div class="metric"><div class="metric-label">Lucro bruto mês</div><div class="metric-value" id="r-lucro" style="color:var(--green)">—</div></div>
+    <div class="metric"><div class="metric-label">Margem média</div><div class="metric-value" id="r-margem">—</div></div>
+    <div class="metric"><div class="metric-label">Ticket médio</div><div class="metric-value" id="r-ticket">—</div></div>
+    <div class="metric"><div class="metric-label">Lucro líquido mês</div><div class="metric-value" id="r-liquido">—</div><div class="metric-sub">faturamento − despesas</div></div>
+  </div>
+  <div class="g2 mb12">
+    <div class="card">
+      <div class="card-title">Faturamento — últimos 14 dias</div>
+      <div id="chart-dias" class="barchart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Formas de pagamento (mês)</div>
+      <div id="chart-pag" class="barchart"></div>
+    </div>
+  </div>
+  <div class="g2 mb12">
+    <div class="card">
+      <div class="card-title">Produtos mais vendidos (mês)</div>
+      <div id="chart-mais-vendidos" class="barchart"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Produtos mais lucrativos (mês)</div>
+      <div id="chart-mais-lucrativos" class="barchart"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+      <div class="card-title" style="margin:0">Histórico de vendas</div>
+      <button class="btn btn-sm" onclick="exportVendasCSV()">Exportar CSV</button>
+    </div>
+    <table><thead><tr><th>Data/Hora</th><th>Itens</th><th>Subtotal</th><th>Desconto</th><th>Total</th><th>Custo</th><th>Lucro</th><th>Pagamento</th><th></th></tr></thead>
+    <tbody id="tb-vendas"></tbody></table>
+  </div>
+</div>

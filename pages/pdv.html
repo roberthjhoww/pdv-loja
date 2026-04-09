@@ -1,0 +1,57 @@
+<div class="page" id="page-pdv">
+  <div id="pdv-alerta-estoque"></div>
+  <div class="pdv-layout">
+    <div class="pdv-left">
+      <div class="search-wrap">
+        <div class="search-bar">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="pdv-search" placeholder="Nome, código ou leia o código de barras..." autofocus oninput="filtrarPDV()" onkeydown="barcodePDV(event)">
+        </div>
+        <button class="fav-toggle" id="fav-toggle-btn" onclick="toggleFavMode()">★ Favoritos</button>
+      </div>
+      <div class="prod-grid" id="pdv-grid"></div>
+    </div>
+    <div class="pdv-right">
+      <div class="cart-panel">
+        <div class="cart-header">
+          <span>Carrinho</span>
+          <button class="btn btn-sm" onclick="limparCarrinho()">Limpar</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+          <div class="empty">Adicione produtos</div>
+        </div>
+        <div class="cart-footer">
+          <div class="total-row"><span class="tl">Subtotal</span><span class="tv" id="c-sub">R$ 0,00</span></div>
+          <div class="total-row">
+            <span class="tl">Desconto</span>
+            <div class="desc-row">
+              <input type="number" id="c-desc" placeholder="0" min="0" oninput="calcTotal()" style="width:58px;font-size:14px;padding:6px 8px">
+              <select id="c-desc-tipo" onchange="calcTotal()" style="width:44px;font-size:14px;padding:4px"><option value="R$">R$</option><option value="%">%</option></select>
+            </div>
+          </div>
+          <div class="sep" style="margin:7px 0"></div>
+          <div class="total-row"><span style="font-size:16px;font-weight:500">Total</span><span class="total-grand" id="c-total">R$ 0,00</span></div>
+          <div class="pag-tabs">
+            <div class="pag-tab sel" id="pt-dinheiro" onclick="selPag('dinheiro')">Dinheiro</div>
+            <div class="pag-tab" id="pt-credito" onclick="selPag('credito')">Crédito</div>
+            <div class="pag-tab" id="pt-debito" onclick="selPag('debito')">Débito</div>
+            <div class="pag-tab" id="pt-pix" onclick="selPag('pix')">PIX</div>
+          </div>
+          <div id="troco-wrap">
+            <div class="troco-rapido">
+              <button onclick="setRecebido(10)">R$10</button>
+              <button onclick="setRecebido(20)">R$20</button>
+              <button onclick="setRecebido(50)">R$50</button>
+              <button onclick="setRecebido(100)">R$100</button>
+            </div>
+            <input type="number" id="c-recebido" placeholder="Valor recebido (R$)" oninput="calcTroco()" style="margin-bottom:5px;font-size:16px;font-family:var(--mono)">
+            <div class="troco-info">Troco: <strong id="c-troco">R$ 0,00</strong></div>
+          </div>
+          <button class="btn btn-dark btn-full btn-lg" onclick="finalizarVenda()">Finalizar venda</button>
+          <button class="btn btn-full btn-sm" style="margin-top:5px" onclick="imprimirCupom()">🖨 Imprimir cupom</button>
+          <button class="btn btn-amber btn-full btn-sm" style="margin-top:5px" onclick="abrirFiado()">Lançar no fiado</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
