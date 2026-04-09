@@ -236,6 +236,9 @@ tbody tr:hover td{background:var(--surface2)}
 .fiado-badge{background:var(--purple-bg);color:var(--purple);border:1px solid #d4b8f5;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:500}
 
 /* CUSTO MÉDIO */
+.codigo-chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:3px 9px;font-size:12px;font-family:var(--mono)}
+.codigo-chip button{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:0;line-height:1;display:flex;align-items:center}
+.codigo-chip button:hover{color:var(--red)}
 .custo-medio-badge{display:inline-block;background:#e8f4fd;color:#1a3a6b;border:1px solid #b3d4f0;border-radius:var(--radius);padding:3px 8px;font-size:12px;font-family:var(--mono);margin-left:6px}
 
 /* COMBO */
@@ -257,6 +260,60 @@ tbody tr:hover td{background:var(--surface2)}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* CUPOM */
+.cupom-wrap{font-family:'IBM Plex Mono',monospace;font-size:13px;background:#fff;color:#000;width:300px;margin:0 auto;padding:20px 16px;line-height:1.6}
+.cupom-wrap .c-title{text-align:center;font-size:15px;font-weight:700;margin-bottom:2px}
+.cupom-wrap .c-sub{text-align:center;font-size:11px;color:#555;margin-bottom:12px}
+.cupom-wrap .c-sep{border:none;border-top:1px dashed #aaa;margin:8px 0}
+.cupom-wrap .c-row{display:flex;justify-content:space-between;font-size:12px}
+.cupom-wrap .c-row.bold{font-weight:700;font-size:13px}
+.cupom-wrap .c-center{text-align:center;font-size:11px;color:#555;margin-top:8px}
+
+/* PAINEL CAIXA */
+.caixa-panel{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;flex-direction:column;pointer-events:none}
+.caixa-panel.open{display:flex;pointer-events:all}
+.caixa-topbar{background:var(--text);color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.caixa-topbar h1{font-size:18px;font-weight:500}
+.caixa-body{flex:1;display:grid;grid-template-columns:1fr 380px;gap:16px;padding:16px;overflow:hidden}
+.caixa-produtos{display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.caixa-carrinho{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.caixa-search{position:relative}
+.caixa-search input{width:100%;font-size:18px;padding:12px 14px 12px 40px;border:1px solid var(--border);border-radius:var(--radius);font-family:var(--mono)}
+.caixa-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text3)}
+.caixa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;overflow-y:auto;flex:1}
+.caixa-tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all .12s;text-align:center}
+.caixa-tile:hover{border-color:var(--border2);background:var(--surface2);transform:scale(1.02)}
+.caixa-tile:active{transform:scale(.97)}
+.caixa-tile.out{opacity:.35;cursor:not-allowed}
+.ct-name{font-size:14px;font-weight:500;margin-bottom:6px;line-height:1.3}
+.ct-price{font-size:20px;font-weight:600;font-family:var(--mono);color:var(--green)}
+.ct-stock{font-size:12px;color:var(--text3);margin-top:3px}
+.caixa-cart-header{padding:14px 16px;border-bottom:1px solid var(--border);font-size:15px;font-weight:500;display:flex;justify-content:space-between}
+.caixa-cart-items{flex:1;overflow-y:auto;padding:4px 0;min-height:0}
+.caixa-cart-item{display:flex;align-items:center;gap:8px;padding:8px 16px}
+.cci-name{flex:1;font-size:14px}
+.cci-qbtn{width:28px;height:28px;border:1px solid var(--border);border-radius:5px;background:var(--surface2);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.cci-qty{font-size:14px;font-family:var(--mono);width:24px;text-align:center;font-weight:600}
+.cci-total{font-size:14px;font-family:var(--mono);min-width:72px;text-align:right}
+.cci-rm{width:20px;height:20px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:16px}
+.cci-rm:hover{color:var(--red)}
+.caixa-cart-footer{padding:14px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.caixa-total{font-size:28px;font-family:var(--mono);font-weight:600;color:var(--green);text-align:right;margin-bottom:10px}
+.caixa-pag-tabs{display:flex;gap:6px;margin-bottom:10px}
+.caixa-pag-tab{flex:1;padding:9px 4px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;text-align:center;transition:all .12s;background:var(--surface);color:var(--text2)}
+.caixa-pag-tab.sel{background:var(--text);color:#fff;border-color:var(--text)}
+.caixa-troco-rapido{display:flex;gap:6px;margin-bottom:8px}
+.caixa-troco-rapido button{flex:1;padding:8px 2px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);cursor:pointer;font-family:var(--mono);color:var(--text2)}
+.caixa-troco-rapido button:hover{background:var(--surface2)}
+.caixa-troco{background:var(--surface2);border-radius:var(--radius);padding:10px 13px;font-size:14px;font-family:var(--mono);margin-bottom:10px}
+.caixa-btn-fin{width:100%;padding:16px;font-size:18px;font-weight:600;background:var(--text);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;transition:all .12s}
+.caixa-btn-fin:hover{background:#333}
+.caixa-btn-fiad{width:100%;padding:9px;font-size:13px;font-weight:500;background:var(--amber-bg);color:var(--amber);border:1px solid #e8d5a0;border-radius:var(--radius);cursor:pointer;margin-top:6px}
+
+/* HISTÓRICO CUSTO */
+.hcusto-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.hcusto-item:last-child{border-bottom:none}
 </style>
 </head>
 <body>
@@ -316,6 +373,7 @@ tbody tr:hover td{background:var(--surface2)}
     </div>
     <nav class="sidebar-nav">
       <div class="nav-item active" onclick="goTo('pdv',this)"><span class="nav-icon">⊡</span> PDV</div>
+      <div class="nav-item" onclick="abrirPainelCaixa()"><span class="nav-icon">▣</span> Painel caixa</div>
       <div class="nav-item" onclick="goTo('fechamento',this)"><span class="nav-icon">◧</span> Fechamento diário</div>
       <div class="nav-item" onclick="goTo('estoque',this)"><span class="nav-icon">▦</span> Estoque</div>
       <div class="nav-item" onclick="goTo('fiado',this)"><span class="nav-icon">◈</span> Fiado</div>
@@ -388,6 +446,7 @@ tbody tr:hover td{background:var(--surface2)}
                   <div class="troco-info">Troco: <strong id="c-troco">R$ 0,00</strong></div>
                 </div>
                 <button class="btn btn-dark btn-full btn-lg" onclick="finalizarVenda()">Finalizar venda</button>
+                <button class="btn btn-full btn-sm" style="margin-top:5px" onclick="imprimirCupom()">🖨 Imprimir cupom</button>
                 <button class="btn btn-amber btn-full btn-sm" style="margin-top:5px" onclick="abrirFiado()">Lançar no fiado</button>
               </div>
             </div>
@@ -627,7 +686,14 @@ tbody tr:hover td{background:var(--surface2)}
             <div class="card-title" id="prod-form-title">Novo produto</div>
             <div class="row">
               <div class="field" style="flex:2"><label>Nome</label><input type="text" id="p-nome" placeholder="Ex: Feijão Carioca 1kg"></div>
-              <div class="field"><label>Código / SKU</label><input type="text" id="p-codigo" placeholder="7891234..." style="font-family:var(--mono)"></div>
+              <div class="field">
+                <label>Códigos de barras / SKU</label>
+                <div style="display:flex;gap:6px;margin-bottom:6px">
+                  <input type="text" id="p-codigo-novo" placeholder="7891234..." style="font-family:var(--mono);flex:1" onkeydown="if(event.key==='Enter'){event.preventDefault();addCodigoProd()}">
+                  <button class="btn btn-sm btn-dark" onclick="addCodigoProd()" type="button">+ Add</button>
+                </div>
+                <div id="p-codigos-lista" style="display:flex;flex-wrap:wrap;gap:5px;min-height:24px"></div>
+              </div>
             </div>
             <div class="row">
               <div class="field"><label>Tipo</label>
@@ -743,6 +809,79 @@ tbody tr:hover td{background:var(--surface2)}
   </main>
 </div>
 
+
+<!-- PAINEL CAIXA OPERADOR -->
+<div class="caixa-panel" id="painel-caixa">
+  <div class="caixa-topbar">
+    <h1 id="caixa-loja-nome">Minha Loja</h1>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span id="caixa-hora" style="font-family:var(--mono);font-size:14px;opacity:.7"></span>
+      <button onclick="fecharPainelCaixa()" style="padding:7px 14px;font-size:13px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--radius);color:#fff;cursor:pointer">✕ Fechar</button>
+    </div>
+  </div>
+  <div class="caixa-body">
+    <div class="caixa-produtos">
+      <div class="caixa-search">
+        <span class="caixa-search-icon">⌕</span>
+        <input type="text" id="caixa-busca" placeholder="Buscar produto ou ler código de barras..." oninput="renderCaixaGrid()" onkeydown="caixaBarcode(event)" autofocus>
+      </div>
+      <div class="caixa-grid" id="caixa-grid"></div>
+    </div>
+    <div class="caixa-carrinho">
+      <div class="caixa-cart-header">
+        <span>Carrinho</span>
+        <button class="btn btn-sm" onclick="limparCaixaCarrinho()">Limpar</button>
+      </div>
+      <div class="caixa-cart-items" id="caixa-cart-items">
+        <div class="empty">Adicione produtos</div>
+      </div>
+      <div class="caixa-cart-footer">
+        <div class="total-row" style="margin-bottom:4px"><span style="font-size:14px;color:var(--text2)">Subtotal</span><span style="font-family:var(--mono);font-size:14px" id="caixa-sub">R$ 0,00</span></div>
+        <div class="caixa-total" id="caixa-total">R$ 0,00</div>
+        <div class="caixa-pag-tabs">
+          <div class="caixa-pag-tab sel" id="cpt-dinheiro" onclick="selCaixaPag('dinheiro')">Dinheiro</div>
+          <div class="caixa-pag-tab" id="cpt-credito" onclick="selCaixaPag('credito')">Crédito</div>
+          <div class="caixa-pag-tab" id="cpt-debito" onclick="selCaixaPag('debito')">Débito</div>
+          <div class="caixa-pag-tab" id="cpt-pix" onclick="selCaixaPag('pix')">PIX</div>
+        </div>
+        <div id="caixa-troco-wrap">
+          <div class="caixa-troco-rapido">
+            <button onclick="setCaixaRecebido(10)">R$10</button>
+            <button onclick="setCaixaRecebido(20)">R$20</button>
+            <button onclick="setCaixaRecebido(50)">R$50</button>
+            <button onclick="setCaixaRecebido(100)">R$100</button>
+          </div>
+          <input type="number" id="caixa-recebido" placeholder="Valor recebido (R$)" oninput="calcCaixaTroco()" style="width:100%;font-size:20px;font-family:var(--mono);padding:10px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px">
+          <div class="caixa-troco">Troco: <strong id="caixa-troco">R$ 0,00</strong></div>
+        </div>
+        <button class="caixa-btn-fin" onclick="finalizarCaixaVenda()">Finalizar venda</button>
+        <button class="caixa-btn-fiad" onclick="abrirFiadoCaixa()">Lançar no fiado</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CUPOM -->
+<div class="modal-bg" id="modal-cupom">
+  <div class="modal" style="max-width:340px">
+    <div class="modal-title">Cupom</div>
+    <div id="cupom-content"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-dark" style="flex:1" onclick="printCupom()">Imprimir</button>
+      <button class="btn" onclick="fecharModal('modal-cupom')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HIST CUSTO -->
+<div class="modal-bg" id="modal-hist-custo">
+  <div class="modal">
+    <div class="modal-title" id="mhc-title">Histórico de custo</div>
+    <div id="mhc-content"></div>
+    <button class="btn" style="margin-top:16px;width:100%" onclick="fecharModal('modal-hist-custo')">Fechar</button>
+  </div>
+</div>
+
 <!-- MODAL FIADO PDV -->
 <div class="modal-bg" id="modal-fiado">
   <div class="modal">
@@ -826,18 +965,19 @@ async function carregarTudo(){
   FIADOS=f.docs.map(d=>({id:d.id,...d.data()}));
   MOVS=m.docs.map(d=>({id:d.id,...d.data()}));
   COMBOS=cb.docs.map(d=>({id:d.id,...d.data()}));
-  if(cfg.exists()){CFG=cfg.data();qs('cfg-nome').value=CFG.nome||'';qs('cfg-end').value=CFG.endereco||'';qs('cfg-tel').value=CFG.telefone||'';qs('loja-nome-side').textContent=CFG.nome||'Minha Loja'}
+  if(cfg.exists()){CFG=cfg.data();if(qs('cfg-nome'))qs('cfg-nome').value=CFG.nome||'';if(qs('cfg-end'))qs('cfg-end').value=CFG.endereco||'';if(qs('cfg-tel'))qs('cfg-tel').value=CFG.telefone||'';qs('loja-nome-side').textContent=CFG.nome||'Minha Loja'}
   FAVS=new Set(JSON.parse(localStorage.getItem('favs')||'[]'));
-  qs('l-data').value=hoje();qs('fech-data').value=hoje();
+  if(qs('l-data'))qs('l-data').value=hoje();if(qs('fech-data'))qs('fech-data').value=hoje();
   toggleCats();preencherMeses();
   renderPDV();renderEstoque();atualizarMetricasEstoque();carregarCaixa();renderCombos();atualizarSelectCombo();
+  window._codigos_temp=[];renderCodigosChips();
   renderLancamentos();atualizarMetricasFinanceiro();
   renderRelatorios();renderProdutos();renderFiado();renderFiadoHist();
   renderMov();atualizarAlertaEstoque();atualizarSelectProd();
 }
 
 // NAV
-const TITLES={pdv:'PDV — Ponto de Venda',fechamento:'Fechamento Diário',estoque:'Estoque',fiado:'Controle de Fiado',financeiro:'Financeiro',relatorios:'Relatórios',produtos:'Cadastro de Produtos',combos:'Combos',config:'Configurações'};
+const TITLES={pdv:'PDV — Ponto de Venda',fechamento:'Fechamento Diário',estoque:'Estoque',fiado:'Controle de Fiado',financeiro:'Financeiro',relatorios:'Relatórios',produtos:'Cadastro de Produtos',combos:'Combos',config:'Configurações',histcusto:'Histórico de Custo'};
 window.goTo=function(pg,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -881,42 +1021,65 @@ function atualizarAlertaEstoque(){
 // PDV
 function renderPDV(){
   const busca=(qs('pdv-search')||{value:''}).value.toLowerCase();
-  let lista=PRODS.filter(p=>!busca||(p.nome.toLowerCase().includes(busca)||(p.codigo||'').includes(busca)));
+  let lista=PRODS.filter(p=>!busca||(p.nome.toLowerCase().includes(busca)||(p.codigo||'').includes(busca)||(p.codigos||[]).some(c=>c.includes(busca))));
   if(favMode)lista=lista.filter(p=>FAVS.has(p.id));
-  // Incluir combos na lista do PDV
   let listaC=COMBOS.filter(c=>!busca||(c.nome.toLowerCase().includes(busca)||(c.codigo||'').includes(busca)));
   if(favMode)listaC=listaC.filter(c=>FAVS.has('combo_'+c.id));
   const el=qs('pdv-grid');if(!el)return;
   if(!lista.length&&!listaC.length){el.innerHTML='<div class="empty">Nenhum produto encontrado</div>';return}
-  const htmlProds=lista.map(p=>{
+
+  el.innerHTML='';
+
+  lista.forEach(p=>{
     const out=p.estoque<=0,low=!out&&p.estoque<=(p.estoqueMin||5);
     const isFav=FAVS.has(p.id);
-    return `<div class="prod-tile ${out?'out':''} ${low&&!out?'low-stock':''}" data-id="${p.id}" data-tipo="prod">
-      <button class="fav-star ${isFav?'active':''}" onclick="toggleFav('${p.id}',event)" title="Favoritar">★</button>
-      <div class="pt-code">${p.codigo||'—'}</div>
-      <div class="pt-name">${p.nome}</div>
-      <div class="pt-price">${fmt(p.venda)}</div>
-      <div class="pt-stock ${out?'out':low?'low':''}">${out?'SEM ESTOQUE':low?`⚠ ${p.estoque} ${p.unidade||'un'}`:p.estoque+' '+(p.unidade||'un')}</div>
-    </div>`;
-  }).join('');
-  const htmlCombos=listaC.map(c=>{
+    const div=document.createElement('div');
+    div.className='prod-tile'+(out?' out':'')+(low&&!out?' low-stock':'');
+    div.dataset.id=p.id;div.dataset.tipo='prod';
+    const stockTxt=out?'SEM ESTOQUE':low?('⚠ '+p.estoque+' '+(p.unidade||'un')):p.estoque+' '+(p.unidade||'un');
+    div.innerHTML=
+      '<button class="fav-star'+(isFav?' active':'')+'" data-favid="'+p.id+'" title="Favoritar">★</button>'+
+      '<div class="pt-code">'+(p.codigo||'—')+'</div>'+
+      '<div class="pt-name">'+p.nome+'</div>'+
+      '<div class="pt-price">'+fmt(p.venda)+'</div>'+
+      '<div class="pt-stock'+(out?' out':low?' low':'')+'" >'+stockTxt+'</div>';
+    if(!out){
+      div.addEventListener('click',function(e){
+        if(e.target.closest('.fav-star')){toggleFav(p.id,e);return;}
+        addCarrinho(p.id);
+      });
+    }
+    div.querySelector('.fav-star').addEventListener('click',function(e){
+      e.stopPropagation();toggleFav(p.id,e);
+    });
+    el.appendChild(div);
+  });
+
+  listaC.forEach(c=>{
     const isFav=FAVS.has('combo_'+c.id);
     const semEstoque=comboSemEstoque(c);
-    return `<div class="prod-tile ${semEstoque?'out':''}" data-id="${c.id}" data-tipo="combo">
-      <button class="fav-star ${isFav?'active':''}" onclick="toggleFav('combo_${c.id}',event)" title="Favoritar">★</button>
-      <div class="pt-code" style="color:var(--amber)">${c.codigo||'COMBO'}</div>
-      <div class="pt-name">${c.nome}</div>
-      <div class="pt-price">${fmt(c.venda)}</div>
-      <div class="pt-stock">${semEstoque?'SEM ESTOQUE':'combo'}</div>
-    </div>`;
-  }).join('');
-  el.innerHTML=htmlProds+htmlCombos;
-  el.querySelectorAll('.prod-tile:not(.out)').forEach(t=>t.addEventListener('click',e=>{
-    if(e.target.classList.contains('fav-star'))return;
-    if(t.dataset.tipo==='combo')addComboCarrinho(t.dataset.id);
-    else addCarrinho(t.dataset.id);
-  }));
+    const div=document.createElement('div');
+    div.className='prod-tile'+(semEstoque?' out':'');
+    div.dataset.id=c.id;div.dataset.tipo='combo';
+    div.innerHTML=
+      '<button class="fav-star'+(isFav?' active':'')+'" title="Favoritar">★</button>'+
+      '<div class="pt-code" style="color:var(--amber)">'+(c.codigo||'COMBO')+'</div>'+
+      '<div class="pt-name">'+c.nome+'</div>'+
+      '<div class="pt-price">'+fmt(c.venda)+'</div>'+
+      '<div class="pt-stock">'+(semEstoque?'SEM ESTOQUE':'combo')+'</div>';
+    if(!semEstoque){
+      div.addEventListener('click',function(e){
+        if(e.target.closest('.fav-star')){toggleFav('combo_'+c.id,e);return;}
+        addComboCarrinho(c.id);
+      });
+    }
+    div.querySelector('.fav-star').addEventListener('click',function(e){
+      e.stopPropagation();toggleFav('combo_'+c.id,e);
+    });
+    el.appendChild(div);
+  });
 }
+
 
 function comboSemEstoque(c){
   return (c.itens||[]).some(ci=>{
@@ -943,7 +1106,7 @@ window.filtrarPDV=()=>renderPDV();
 window.barcodePDV=function(e){
   if(e.key==='Enter'){
     const q=qs('pdv-search').value.trim();
-    const p=PRODS.find(x=>x.codigo===q);
+    const p=PRODS.find(x=>x.codigo===q||(x.codigos||[]).includes(q));
     if(p){addCarrinho(p.id);qs('pdv-search').value='';renderPDV();}
   }
 };
@@ -1059,10 +1222,12 @@ window.finalizarVenda=async function(){
     }
     const lan={data:hoje(),tipo:'rec',desc:'Venda PDV',cat:'Venda',valor:total,pag:formaPag,obs:''};
     const lRef=await addDoc(collection(db,'lancamentos'),lan);LANCS.push({id:lRef.id,...lan});
+    window._ultimaVenda={...venda,id:vRef.id};
     toast(`Venda finalizada! ${fmt(total)}`);
     window.limparCarrinho();
     qs('c-desc').value='';qs('c-recebido').value='';qs('c-troco').textContent='R$ 0,00';
     renderPDV();atualizarAlertaEstoque();
+    if(CFG.cupomAuto)imprimirCupom();
   }catch(e){toast('Erro: '+e.message,true)}
 };
 
@@ -1093,7 +1258,7 @@ function atualizarStatusCaixa(){
     el.innerHTML=`<div class="caixa-fechado">○ Caixa fechado — abra o caixa para iniciar o dia</div>`;
     qs('abertura-form').style.display='block';
     qs('abertura-info').style.display='none';
-    qs('ab-data').value=hoje();
+    if(qs('ab-data'))qs('ab-data').value=hoje();
   }
 }
 
@@ -1251,7 +1416,7 @@ function renderEstoque(){
     else if(p.estoque<=(p.estoqueMin||5)){badge='badge-low';bt='Baixo'}
     const margem=p.custo&&p.venda?Math.round((p.venda-p.custo)/p.venda*100):0;
     const cm=p.custoMedio||p.custo||0;
-    return `<tr><td><strong>${p.nome}</strong><br><span class="badge ${p.tipo==='insumo'?'badge-insumo':'badge-produto'}" style="font-size:18px">${p.tipo==='insumo'?'Insumo':'Produto'}</span></td><td style="font-family:var(--mono);font-size:16px">${p.codigo||'—'}</td><td style="font-family:var(--mono)"><strong>${p.estoque}</strong> ${p.unidade||'un'}</td><td style="font-family:var(--mono)">${p.estoqueMin||5}</td><td style="font-family:var(--mono)">${fmt(p.custo||0)}<span class="custo-medio-badge" title="Custo médio ponderado">CM: ${fmt(cm)}</span></td><td style="font-family:var(--mono)">${fmt(p.venda)}</td><td style="font-family:var(--mono);color:${margem>30?'var(--green)':'var(--amber)'}">${margem}%</td><td><span class="badge ${badge}">${bt}</span></td><td><button class="btn btn-sm btn-red" onclick="zerarEstoque('${p.id}')">Zerar</button></td></tr>`;
+    return `<tr><td><strong>${p.nome}</strong><br><span class="badge ${p.tipo==='insumo'?'badge-insumo':'badge-produto'}" style="font-size:18px">${p.tipo==='insumo'?'Insumo':'Produto'}</span></td><td style="font-family:var(--mono);font-size:13px">${(p.codigos&&p.codigos.length?p.codigos:[p.codigo||'—']).join(', ')}</td><td style="font-family:var(--mono)"><strong>${p.estoque}</strong> ${p.unidade||'un'}</td><td style="font-family:var(--mono)">${p.estoqueMin||5}</td><td style="font-family:var(--mono)">${fmt(p.custo||0)}<span class="custo-medio-badge" title="Custo médio ponderado">CM: ${fmt(cm)}</span></td><td style="font-family:var(--mono)">${fmt(p.venda)}</td><td style="font-family:var(--mono);color:${margem>30?'var(--green)':'var(--amber)'}">${margem}%</td><td><span class="badge ${badge}">${bt}</span></td><td><button class="btn btn-sm btn-red" onclick="zerarEstoque('${p.id}')">Zerar</button></td></tr>`;
   }).join('');
 }
 window.zerarEstoque=async function(id){
@@ -1311,6 +1476,11 @@ window.entradaEstoque=async function(){
     if(custo>0){
       const lan={data:hoje(),tipo:'des',desc:'Compra estoque: '+p.nome,cat:'Fornecedor',valor:custo*qtd,pag:'',obs:''};
       const lRef=await addDoc(collection(db,'lancamentos'),lan);LANCS.push({id:lRef.id,...lan});
+    }
+    // Salvar histórico de custo
+    if(custo>0){
+      const hc={data:hoje(),produtoId:id,produtoNome:p.nome,custo,qtd,custoMedio:p.custoMedio};
+      await addDoc(collection(db,'hist_custo'),hc);
     }
     toast('Estoque atualizado!');renderEstoque();renderMov();atualizarMetricasEstoque();atualizarAlertaEstoque();
     qs('ent-qtd').value=1;qs('ent-custo').value='';
@@ -1601,14 +1771,14 @@ window.delVenda=async function(id){
 let editId=null;
 window.renderProdutos=function(){
   const busca=(qs('p-busca')||{value:''}).value.toLowerCase();
-  const lista=PRODS.filter(p=>!busca||p.nome.toLowerCase().includes(busca)||(p.codigo||'').includes(busca));
+  const lista=PRODS.filter(p=>!busca||p.nome.toLowerCase().includes(busca)||(p.codigo||'').includes(busca)||(p.codigos||[]).some(c=>c.includes(busca)));
   qs('prod-count').textContent=PRODS.length+' produtos';
   const tb=qs('tb-prods');if(!tb)return;
   if(!lista.length){tb.innerHTML='<tr><td colspan="6" class="empty">Nenhum produto</td></tr>';return}
   tb.innerHTML=lista.map(p=>`<tr>
     <td><strong>${p.nome}</strong><br><span style="font-size:16px;color:var(--text3)">${p.categoria||''}</span></td>
     <td><span class="badge ${p.tipo==='insumo'?'badge-insumo':'badge-produto'}">${p.tipo==='insumo'?'Insumo':'Produto'}</span></td>
-    <td style="font-family:var(--mono);font-size:16px">${p.codigo||'—'}</td>
+    <td style="font-family:var(--mono);font-size:13px">${(p.codigos&&p.codigos.length?p.codigos:[p.codigo||'—']).join(', ')}</td>
     <td style="font-family:var(--mono)">${fmt(p.custoMedio||p.custo||0)}</td>
     <td style="font-family:var(--mono)">${fmt(p.venda)}</td>
     <td style="font-family:var(--mono)">${p.estoque} ${p.unidade||'un'}</td>
@@ -1620,14 +1790,40 @@ window.toggleFavProd=function(id){
   if(FAVS.has(id))FAVS.delete(id);else FAVS.add(id);
   saveFavs();window.renderProdutos();renderPDV();
 };
+// gerenciar múltiplos códigos
+window._codigos_temp=[];
+window.addCodigoProd=function(){
+  const input=qs('p-codigo-novo');
+  const val=input.value.trim();
+  if(!val)return;
+  if(window._codigos_temp.includes(val)){toast('Código já adicionado',true);return}
+  window._codigos_temp.push(val);
+  input.value='';
+  renderCodigosChips();
+};
+function renderCodigosChips(){
+  const el=qs('p-codigos-lista');if(!el)return;
+  if(!window._codigos_temp.length){el.innerHTML='<span style="font-size:13px;color:var(--text3)">Nenhum código</span>';return}
+  el.innerHTML=window._codigos_temp.map((c,i)=>`
+    <span class="codigo-chip">
+      ${c}
+      <button onclick="rmCodigoProd(${i})" title="Remover">×</button>
+    </span>`).join('');
+}
+window.rmCodigoProd=function(i){
+  window._codigos_temp.splice(i,1);
+  renderCodigosChips();
+};
 window.salvarProduto=async function(){
-  const nome=qs('p-nome').value.trim(),codigo=qs('p-codigo').value.trim();
+  const nome=qs('p-nome').value.trim();
+  const codigos=window._codigos_temp||[];
+  const codigo=codigos[0]||'';
   const tipo=qs('p-tipo').value,categoria=qs('p-cat').value,unidade=qs('p-unid').value;
   const custo=parseFloat(qs('p-custo').value)||0,venda=parseFloat(qs('p-venda').value)||0;
   const estoque=parseInt(qs('p-estoque').value)||0,estoqueMin=parseInt(qs('p-min').value)||5;
   if(!nome){toast('Informe o nome',true);return}if(venda<=0){toast('Informe o preço de venda',true);return}
   const custoMedio=custo;
-  const data={nome,codigo,tipo,categoria,unidade,custo,custoMedio,venda,estoqueMin};
+  const data={nome,codigo,codigos,tipo,categoria,unidade,custo,custoMedio,venda,estoqueMin};
   try{
     if(editId){await updateDoc(doc(db,'produtos',editId),data);const p=PRODS.find(x=>x.id===editId);if(p)Object.assign(p,data);}
     else{const ref=await addDoc(collection(db,'produtos'),{...data,estoque});PRODS.push({id:ref.id,...data,estoque});}
@@ -1637,14 +1833,19 @@ window.salvarProduto=async function(){
 window.editarProd=function(id){
   const p=PRODS.find(x=>x.id===id);if(!p)return;
   editId=id;
-  qs('p-nome').value=p.nome;qs('p-codigo').value=p.codigo||'';qs('p-tipo').value=p.tipo||'produto';qs('p-cat').value=p.categoria||'Outros';
+  qs('p-nome').value=p.nome;
+  window._codigos_temp=p.codigos&&p.codigos.length?[...p.codigos]:(p.codigo?[p.codigo]:[]);
+  renderCodigosChips();
+  qs('p-tipo').value=p.tipo||'produto';qs('p-cat').value=p.categoria||'Outros';
   qs('p-unid').value=p.unidade||'un';qs('p-custo').value=p.custo||'';qs('p-venda').value=p.venda;
   qs('p-estoque').value=p.estoque;qs('p-min').value=p.estoqueMin||5;
   qs('prod-form-title').textContent='Editar produto';qs('p-nome').focus();
 };
 window.cancelEdit=function(){
   editId=null;
-  ['p-nome','p-codigo','p-custo','p-venda'].forEach(id=>qs(id).value='');
+  ['p-nome','p-custo','p-venda'].forEach(id=>qs(id).value='');
+  window._codigos_temp=[];renderCodigosChips();
+  if(qs('p-codigo-novo'))qs('p-codigo-novo').value='';
   qs('p-estoque').value=0;qs('p-min').value=5;qs('prod-form-title').textContent='Novo produto';
 };
 window.excluirProd=async function(id){
@@ -1775,6 +1976,206 @@ window.excluirCombo=async function(id){
   renderCombos();renderPDV();toast('Combo excluído');
 };
 
+
+// ── CUPOM NÃO FISCAL ─────────────────────────────────────────────────
+function gerarHTMLCupom(venda){
+  const loja=CFG.nome||'Minha Loja';
+  const end=CFG.endereco||'';
+  const tel=CFG.telefone||'';
+  const dt=new Date(venda.data);
+  const dataStr=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const troco=parseFloat(qs('c-recebido').value||'0')-venda.total;
+  return `<div class="cupom-wrap" id="cupom-print">
+    <div class="c-title">${loja}</div>
+    ${end?`<div class="c-sub">${end}</div>`:''}
+    ${tel?`<div class="c-sub">Tel: ${tel}</div>`:''}
+    <div class="c-sub">${dataStr}</div>
+    <hr class="c-sep">
+    ${(venda.itens||[]).map(i=>`
+      <div class="c-row"><span>${i.nome}</span><span>${i.qty}x ${fmt(i.preco)}</span></div>
+      <div class="c-row" style="justify-content:flex-end"><span>${fmt(i.preco*i.qty)}</span></div>
+    `).join('')}
+    <hr class="c-sep">
+    ${venda.desconto>0?`<div class="c-row"><span>Desconto</span><span>- ${fmt(venda.desconto)}</span></div>`:''}
+    <div class="c-row bold"><span>TOTAL</span><span>${fmt(venda.total)}</span></div>
+    <div class="c-row"><span>${venda.formaPag}</span><span></span></div>
+    ${troco>0?`<div class="c-row"><span>Troco</span><span>${fmt(troco)}</span></div>`:''}
+    <hr class="c-sep">
+    <div class="c-center">Obrigado pela preferência!</div>
+  </div>`;
+}
+window.imprimirCupom=function(){
+  const v=window._ultimaVenda;
+  if(!v){toast('Finalize uma venda primeiro',true);return}
+  qs('cupom-content').innerHTML=gerarHTMLCupom(v);
+  qs('modal-cupom').classList.add('open');
+};
+window.printCupom=function(){
+  const el=qs('cupom-print');if(!el)return;
+  const w=window.open('','_blank');
+  w.document.write(`<html><head><title>Cupom</title><style>
+    body{font-family:monospace;font-size:13px;margin:0;padding:16px;max-width:300px}
+    .c-title{text-align:center;font-size:15px;font-weight:700;margin-bottom:2px}
+    .c-sub{text-align:center;font-size:11px;color:#555;margin-bottom:2px}
+    .c-sep{border:none;border-top:1px dashed #aaa;margin:8px 0}
+    .c-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px}
+    .c-row.bold{font-weight:700;font-size:14px;margin-top:4px}
+    .c-center{text-align:center;font-size:11px;color:#555;margin-top:8px}
+  </style></head><body>${el.innerHTML}</body></html>`);
+  w.document.close();setTimeout(()=>w.print(),300);
+};
+
+// ── HISTÓRICO DE CUSTO ────────────────────────────────────────────────
+window.verHistCusto=async function(id,nome){
+  qs('mhc-title').textContent='Histórico de custo — '+nome;
+  qs('mhc-content').innerHTML='<div class="empty">Carregando...</div>';
+  qs('modal-hist-custo').classList.add('open');
+  try{
+    const snap=await getDocs(collection(db,'hist_custo'));
+    const lista=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(h=>h.produtoId===id)
+      .sort((a,b)=>b.data.localeCompare(a.data))
+      .slice(0,30);
+    if(!lista.length){qs('mhc-content').innerHTML='<div class="empty">Nenhum registro de custo ainda.<br>Registros são criados ao dar entrada de estoque com custo informado.</div>';return}
+    qs('mhc-content').innerHTML=`
+      <table style="width:100%">
+        <thead><tr><th>Data</th><th>Qtd entrada</th><th>Custo unit.</th><th>Custo médio após</th></tr></thead>
+        <tbody>${lista.map(h=>`<tr>
+          <td style="font-family:var(--mono);font-size:13px">${fmtDate(h.data)}</td>
+          <td style="font-family:var(--mono)">${h.qtd}</td>
+          <td style="font-family:var(--mono);color:var(--red)">${fmt(h.custo)}</td>
+          <td style="font-family:var(--mono);color:var(--blue)">${h.custoMedio?fmt(h.custoMedio):'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }catch(e){qs('mhc-content').innerHTML='<div class="empty">Erro ao carregar</div>'}
+};
+
+// ── PAINEL CAIXA (OPERADOR) ───────────────────────────────────────────
+let caixaCarrinho=[],caixaFormaPag='dinheiro';
+let caixaHoraInterval=null;
+
+window.abrirPainelCaixa=function(){
+  qs('painel-caixa').classList.add('open');
+  qs('caixa-loja-nome').textContent=CFG.nome||'Minha Loja';
+  renderCaixaGrid();
+  renderCaixaCarrinho();
+  calcCaixaTotal();
+  qs('caixa-busca').focus();
+  caixaHoraInterval=setInterval(()=>{
+    qs('caixa-hora').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  },1000);
+  qs('caixa-hora').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+};
+window.fecharPainelCaixa=function(){
+  qs('painel-caixa').classList.remove('open');
+  clearInterval(caixaHoraInterval);
+  // Sincronizar carrinho de volta ao PDV se quiser
+};
+window.renderCaixaGrid=function(){
+  const busca=(qs('caixa-busca')||{value:''}).value.toLowerCase();
+  let lista=PRODS.filter(p=>!busca||(p.nome.toLowerCase().includes(busca)||(p.codigos||[]).some(c=>c.toLowerCase().includes(busca))||(p.codigo||'').includes(busca)));
+  const combosF=COMBOS.filter(c=>!busca||c.nome.toLowerCase().includes(busca));
+  const el=qs('caixa-grid');if(!el)return;
+  const htmlP=lista.map(p=>{
+    const out=p.estoque<=0;
+    return '<div class="caixa-tile'+(out?' out':'')+'" data-id="'+p.id+'" data-tipo="prod">'+
+      '<div class="ct-name">'+p.nome+'</div>'+
+      '<div class="ct-price">'+fmt(p.venda)+'</div>'+
+      '<div class="ct-stock'+(out?' out':'')+'">'+( out?'SEM ESTOQUE':p.estoque+' '+(p.unidade||'un'))+'</div></div>';
+  }).join('');
+  const htmlC=combosF.map(c=>
+    '<div class="caixa-tile" data-id="'+c.id+'" data-tipo="combo">'+
+    '<div class="ct-name">'+c.nome+'</div>'+
+    '<div class="ct-price">'+fmt(c.venda)+'</div>'+
+    '<div class="ct-stock" style="color:var(--amber)">combo</div></div>'
+  ).join('');
+  el.innerHTML=(htmlP+htmlC)||'<div class="empty">Nenhum produto</div>';
+  el.querySelectorAll('.caixa-tile:not(.out)').forEach(t=>{
+    t.addEventListener('click',()=>{
+      if(t.dataset.tipo==='combo')addCaixaCombo(t.dataset.id);
+      else addCaixaCarrinho(t.dataset.id);
+    });
+  });
+};
+
+window.caixaBarcode=function(e){
+  if(e.key==='Enter'){
+    const q=qs('caixa-busca').value.trim();
+    const p=PRODS.find(x=>x.codigo===q||(x.codigos||[]).includes(q));
+    if(p){addCaixaCarrinho(p.id);qs('caixa-busca').value='';renderCaixaGrid();}
+  }
+};
+window.addCaixaCarrinho=function(id){
+  const p=PRODS.find(x=>x.id===id);if(!p)return;
+  if(p.estoque<=0){toast('Sem estoque!',true);return}
+  const ex=caixaCarrinho.find(x=>x.id===id);
+  if(ex){if(ex.qty>=p.estoque){toast('Estoque máximo',true);return}ex.qty++;}
+  else caixaCarrinho.push({id:p.id,nome:p.nome,preco:p.venda,custo:p.custo||0,qty:1});
+  renderCaixaCarrinho();calcCaixaTotal();
+};
+window.addCaixaCombo=function(comboId){
+  const c=COMBOS.find(x=>x.id===comboId);if(!c)return;
+  const ex=caixaCarrinho.find(x=>x.id==='combo_'+comboId);
+  if(ex)ex.qty++;
+  else{
+    const ct=(c.itens||[]).reduce((a,ci)=>{const p=PRODS.find(x=>x.id===ci.prodId);return a+(p?(p.custoMedio||p.custo||0)*ci.qtd:0);},0);
+    caixaCarrinho.push({id:'combo_'+comboId,nome:c.nome,preco:c.venda,custo:ct,qty:1,isCombo:true,comboId,comboItens:c.itens});
+  }
+  renderCaixaCarrinho();calcCaixaTotal();
+};
+function renderCaixaCarrinho(){
+  const el=qs('caixa-cart-items');if(!el)return;
+  if(!caixaCarrinho.length){el.innerHTML='<div class="empty">Adicione produtos</div>';return}
+  el.innerHTML=caixaCarrinho.map((item,i)=>`
+    <div class="caixa-cart-item">
+      <span class="cci-name">${item.nome}</span>
+      <button class="cci-qbtn" onclick="chgCaixaQty(${i},-1)">−</button>
+      <span class="cci-qty">${item.qty}</span>
+      <button class="cci-qbtn" onclick="chgCaixaQty(${i},1)">+</button>
+      <span class="cci-total">${fmt(item.preco*item.qty)}</span>
+      <button class="cci-rm" onclick="rmCaixaItem(${i})">×</button>
+    </div>`).join('');
+}
+window.chgCaixaQty=function(i,d){
+  caixaCarrinho[i].qty+=d;
+  if(caixaCarrinho[i].qty<=0)caixaCarrinho.splice(i,1);
+  renderCaixaCarrinho();calcCaixaTotal();
+};
+window.rmCaixaItem=function(i){caixaCarrinho.splice(i,1);renderCaixaCarrinho();calcCaixaTotal();};
+window.limparCaixaCarrinho=function(){caixaCarrinho=[];renderCaixaCarrinho();calcCaixaTotal();};
+function getCaixaTotal(){return caixaCarrinho.reduce((a,i)=>a+i.preco*i.qty,0);}
+function calcCaixaTotal(){
+  const t=getCaixaTotal();
+  qs('caixa-sub').textContent=fmt(t);
+  qs('caixa-total').textContent=fmt(t);
+  calcCaixaTroco();
+}
+window.calcCaixaTroco=function(){
+  const rec=parseFloat(qs('caixa-recebido').value)||0;
+  qs('caixa-troco').textContent=fmt(Math.max(0,rec-getCaixaTotal()));
+};
+window.setCaixaRecebido=function(v){qs('caixa-recebido').value=v;calcCaixaTroco();};
+window.selCaixaPag=function(p){
+  caixaFormaPag=p;
+  ['dinheiro','credito','debito','pix'].forEach(x=>qs('cpt-'+x).classList.toggle('sel',x===p));
+  qs('caixa-troco-wrap').style.display=p==='dinheiro'?'block':'none';
+};
+window.finalizarCaixaVenda=async function(){
+  if(!caixaCarrinho.length){toast('Carrinho vazio!',true);return}
+  // Reutiliza a lógica do PDV principal
+  carrinho=[...caixaCarrinho];
+  formaPag=caixaFormaPag;
+  document.getElementById('c-desc').value='';
+  await window.finalizarVenda();
+  caixaCarrinho=[];renderCaixaCarrinho();calcCaixaTotal();
+  qs('caixa-recebido').value='';qs('caixa-troco').textContent='R$ 0,00';
+  renderCaixaGrid();
+};
+window.abrirFiadoCaixa=function(){
+  carrinho=[...caixaCarrinho];
+  window.abrirFiado();
+};
+
 // CONFIG
 window.salvarConfig=async function(){
   const nome=qs('cfg-nome').value.trim(),endereco=qs('cfg-end').value.trim(),telefone=qs('cfg-tel').value.trim();
@@ -1800,7 +2201,7 @@ try{
   qs('setup-screen').style.display='none';
   qs('main-app').style.display='flex';
   setConn(true);carregarTudo();atualizarData();setInterval(atualizarData,30000);
-  qs('l-data').value=hoje();qs('fech-data').value=hoje();
+  if(qs('l-data'))qs('l-data').value=hoje();if(qs('fech-data'))qs('fech-data').value=hoje();
 }catch(e){console.error(e);setConn(false);}
 </script>
 </body>
