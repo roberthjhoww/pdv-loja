@@ -488,6 +488,89 @@ tbody tr:hover td{background:var(--surface2)}
   </div>
 </div>
 
+<!-- MODAL ENTRADA EM LOTE -->
+<div class="modal-bg" id="modal-lote">
+  <div class="modal" style="width:760px;max-width:96vw">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="modal-title" style="margin:0">Entrada em lote</div>
+      <button class="btn btn-sm" onclick="qs('modal-lote').classList.remove('open')">✕ Fechar</button>
+    </div>
+
+    <!-- FORMULÁRIO -->
+    <div id="lote-form-section">
+      <div class="field" style="margin-bottom:14px">
+        <label>Fornecedor</label>
+        <input type="text" id="lote-fornecedor" placeholder="Nome do fornecedor (opcional)"
+               list="lote-fornecedores-list" autocomplete="off">
+        <datalist id="lote-fornecedores-list"></datalist>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 70px 120px 108px 32px;gap:6px;margin-bottom:4px;padding:0 2px">
+        <span style="font-size:12px;font-weight:500;color:var(--text2)">Produto</span>
+        <span style="font-size:12px;font-weight:500;color:var(--text2)">Qtd</span>
+        <span style="font-size:12px;font-weight:500;color:var(--text2)">Custo unit.</span>
+        <span style="font-size:12px;font-weight:500;color:var(--text2)">Valor total</span>
+        <span></span>
+      </div>
+
+      <div id="lote-rows-wrap"></div>
+
+      <button class="btn btn-sm" onclick="loteAddLinha()" style="margin-top:6px;width:100%">+ Adicionar produto</button>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <span style="font-size:14px;color:var(--text2)">Total do lote</span>
+        <span id="lote-grand-total" style="font-size:20px;font-weight:700;color:var(--blue)">R$ 0,00</span>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+        <button class="btn" onclick="qs('modal-lote').classList.remove('open')">Cancelar</button>
+        <button class="btn btn-dark" onclick="revisarLote()">Revisar entrada →</button>
+      </div>
+    </div>
+
+    <!-- REVISÃO -->
+    <div id="lote-review-section" style="display:none"></div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR MOVIMENTAÇÃO -->
+<div class="modal-bg" id="modal-edit-mov">
+  <div class="modal" style="width:360px">
+    <div class="modal-title">Editar movimentação</div>
+    <input type="hidden" id="edit-mov-id">
+    <div style="margin-bottom:14px">
+      <div id="edit-mov-nome" style="font-size:15px;font-weight:500"></div>
+      <div id="edit-mov-tipo" style="font-size:12px;color:var(--text3);margin-top:2px"></div>
+    </div>
+    <div class="field"><label>Quantidade</label><input type="number" id="edit-mov-qtd" min="1" value="1"></div>
+    <div class="field" id="edit-mov-custo-wrap">
+      <label>Custo unitário (R$)</label>
+      <input type="number" id="edit-mov-custo" step="0.01" placeholder="0,00">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn" style="flex:1" onclick="fecharModal('modal-edit-mov')">Cancelar</button>
+      <button class="btn btn-dark" style="flex:1" onclick="salvarEditMov()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ITEM DO LOTE -->
+<div class="modal-bg" id="modal-edit-lote-item">
+  <div class="modal" style="width:380px">
+    <div class="modal-title">Editar item</div>
+    <input type="hidden" id="edit-lote-lancId">
+    <input type="hidden" id="edit-lote-movId">
+    <input type="hidden" id="edit-lote-prodId">
+    <div id="edit-lote-prod-nome" style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:14px"></div>
+    <div class="field"><label>Quantidade</label><input type="number" id="edit-lote-qtd" min="1" value="1"></div>
+    <div class="field"><label>Custo unitário (R$)</label><input type="number" id="edit-lote-custo" step="0.01" placeholder="0,00"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn" style="flex:1" onclick="fecharModal('modal-edit-lote-item')">Cancelar</button>
+      <button class="btn btn-dark" style="flex:1" onclick="salvarEditLoteItem()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script type="module" src="js/main.js"></script>
