@@ -17,6 +17,7 @@ export const getId = () => Date.now().toString(36) + Math.random().toString(36).
 export const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
 
 export const qs = id => document.getElementById(id);
+window.qs = qs; // expõe para handlers inline (onclick="qs(...)")
 
 export function toast(msg, err = false) {
   const t = qs('toast');

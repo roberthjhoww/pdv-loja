@@ -4,6 +4,14 @@ import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from './fireba
 import { renderProdutos } from './produtos.js';
 import { renderLancamentos, atualizarMetricasFinanceiro } from './financeiro.js';
 
+// Parser que aceita vírgula ou ponto como separador decimal
+function loteParseNum(val) {
+  return parseFloat((String(val || '')).replace(',', '.')) || 0;
+}
+
+// Índice de item destacado por teclado em cada dropdown do lote
+const _loteDropIdx = {};
+
 export function atualizarMetricasEstoque() {
   if (!qs('e-total')) return;
   qs('e-total').textContent = state.PRODS.length;
@@ -227,18 +235,77 @@ window.delMov = async function (id) {
 };
 
 export function atualizarSelectProd() {
-  const sel = qs('ent-prod');
-  if (!sel) return;
-  const prev = sel.value;
-  sel.innerHTML = '<option value="">Selecione...</option>' +
-    state.PRODS.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
-  sel.value = prev;
+  // campo de produto agora é input com busca — não precisa popular select
 }
 
+// ── Busca de produto no "Registrar Entrada" ──────────────────────────────────
+window.entBusca = function () {
+  const term = (document.getElementById('ent-prod-search')?.value || '').toLowerCase();
+  const drop = document.getElementById('ent-drop');
+  if (!drop) return;
+  if (!term) { drop.style.display = 'none'; return; }
+  const results = state.PRODS.filter(p =>
+    p.nome.toLowerCase().includes(term) ||
+    (p.codigos && p.codigos.some(c => String(c).toLowerCase().includes(term))) ||
+    (p.codigo && String(p.codigo).toLowerCase().includes(term))
+  ).slice(0, 12);
+  if (!results.length) { drop.style.display = 'none'; return; }
+  drop.style.display = '';
+  drop.innerHTML = results.map(p => `
+    <div style="padding:8px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+         onmousedown="entSelecionarProd('${p.id}','${p.nome.replace(/'/g, "\\'")}')"
+         onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+      <span>${p.nome}</span>
+      <span style="color:var(--text3);font-size:11px;margin-left:6px">estoque: ${p.estoque} ${p.unidade || 'un'}</span>
+    </div>`).join('');
+};
+
+window.entMostraDrop = function () {
+  const term = document.getElementById('ent-prod-search')?.value || '';
+  if (term) window.entBusca();
+};
+
+window.entEscondeDrop = function () {
+  setTimeout(() => {
+    const d = document.getElementById('ent-drop');
+    if (d) d.style.display = 'none';
+  }, 150);
+};
+
+window.entSelecionarProd = function (prodId, prodNome) {
+  document.getElementById('ent-prod-search').value = prodNome;
+  document.getElementById('ent-prod').value = prodId;
+  document.getElementById('ent-drop').style.display = 'none';
+  document.getElementById('ent-qtd')?.focus();
+};
+
+window.entKeyProd = function (e) {
+  const drop = document.getElementById('ent-drop');
+  if (e.key === 'Enter' || e.key === 'Tab') {
+    if (drop && drop.style.display !== 'none') {
+      const first = drop.querySelector('div');
+      if (first) { first.dispatchEvent(new MouseEvent('mousedown')); e.preventDefault(); return; }
+    }
+    e.preventDefault();
+    document.getElementById('ent-qtd')?.focus();
+  }
+};
+
+window.entNumKey = function (e) {
+  if (e.key === ',') {
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart ?? el.value.length;
+    const end   = el.selectionEnd   ?? start;
+    el.value = el.value.slice(0, start) + '.' + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start + 1;
+  }
+};
+
 window.entradaEstoque = async function () {
-  const id   = qs('ent-prod').value;
-  const qtd  = parseInt(qs('ent-qtd').value) || 0;
-  const custo = parseFloat(qs('ent-custo').value) || 0;
+  const id    = qs('ent-prod').value;
+  const qtd   = loteParseNum(qs('ent-qtd').value);
+  const custo = loteParseNum(qs('ent-custo').value);
   if (!id)    { toast('Selecione um produto', true); return; }
   if (qtd <= 0) { toast('Informe a quantidade', true); return; }
   const p = state.PRODS.find(x => x.id === id);
@@ -272,6 +339,7 @@ window.entradaEstoque = async function () {
     const { atualizarAlertaEstoque } = await import('./pdv.js');
     atualizarAlertaEstoque();
     qs('ent-qtd').value = 1; qs('ent-custo').value = '';
+    qs('ent-prod').value = ''; qs('ent-prod-search').value = '';
   } catch (e) { toast('Erro: ' + e.message, true); }
 };
 
@@ -364,17 +432,18 @@ window.loteAddLinha = function () {
       <div id="lote-drop-${idx}" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);max-height:160px;overflow-y:auto;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,.12)"></div>
       <div id="lote-info-${idx}" style="font-size:11px;color:var(--text3);margin-top:2px;min-height:14px"></div>
     </div>
-    <input type="number" id="lote-qtd-${idx}" value="1" min="1" style="text-align:center"
-           oninput="loteCalcFromUnit(${idx})" onkeydown="loteKeyField(${idx},'qtd',event)">
+    <input type="text" inputmode="decimal" id="lote-qtd-${idx}" value="1" style="text-align:center"
+           oninput="loteCalcFromUnit(${idx})" onkeydown="loteKeyField(${idx},'qtd',event);loteNumKey(event)">
     <div style="position:relative">
-      <input type="number" id="lote-unit-${idx}" step="0.01" placeholder="0,00" style="width:100%;padding-right:26px"
-             oninput="loteCalcFromUnit(${idx})" onkeydown="loteKeyField(${idx},'unit',event)">
+      <input type="text" inputmode="decimal" id="lote-unit-${idx}" placeholder="0,00" style="width:100%;padding-right:26px"
+             oninput="loteCalcFromUnit(${idx})" onkeydown="loteKeyField(${idx},'unit',event);loteNumKey(event)">
       <span id="lote-alert-${idx}" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:13px;cursor:help" title=""></span>
     </div>
-    <input type="number" id="lote-val-${idx}" step="0.01" placeholder="0,00"
-           oninput="loteCalcFromVal(${idx})" onkeydown="loteKeyField(${idx},'val',event)">
+    <input type="text" inputmode="decimal" id="lote-val-${idx}" placeholder="0,00"
+           oninput="loteCalcFromVal(${idx})" onkeydown="loteKeyField(${idx},'val',event);loteNumKey(event)">
     <button class="btn btn-sm btn-red" onclick="loteRemove(${idx})" style="padding:0;width:32px;height:33px;font-size:16px" title="Remover">×</button>`;
   wrap.appendChild(div);
+  div.scrollIntoView({ block: 'nearest' });
   document.getElementById('lote-search-' + idx)?.focus();
 };
 
@@ -388,18 +457,37 @@ window.loteBusca = function (idx) {
   const term = (document.getElementById('lote-search-' + idx)?.value || '').toLowerCase();
   const drop = document.getElementById('lote-drop-' + idx);
   if (!drop) return;
+  _loteDropIdx[idx] = -1;
   if (!term) { drop.style.display = 'none'; return; }
-  const results = state.PRODS.filter(p => p.nome.toLowerCase().includes(term)).slice(0, 12);
+  const results = state.PRODS.filter(p =>
+    p.nome.toLowerCase().includes(term) ||
+    (p.codigos && p.codigos.some(c => String(c).toLowerCase().includes(term))) ||
+    (p.codigo && String(p.codigo).toLowerCase().includes(term))
+  ).slice(0, 12);
   if (!results.length) { drop.style.display = 'none'; return; }
   drop.style.display = '';
-  drop.innerHTML = results.map(p => `
-    <div style="padding:8px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+  drop.innerHTML = results.map((p, i) => `
+    <div class="lote-drop-item" data-i="${i}" style="padding:8px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
          onmousedown="loteSelecionarProd(${idx},'${p.id}','${p.nome.replace(/'/g, "\\'")}')"
-         onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+         onmouseover="loteDropMouseover(${idx},${i})">
       ${p.nome}
       <span style="color:var(--text3);font-size:11px;margin-left:6px">estoque: ${p.estoque} ${p.unidade || 'un'}</span>
     </div>`).join('');
 };
+
+window.loteDropMouseover = function (idx, i) {
+  _loteDropIdx[idx] = i;
+  loteDropUpdateHighlight(idx);
+};
+
+function loteDropUpdateHighlight(idx) {
+  const drop = document.getElementById('lote-drop-' + idx);
+  if (!drop) return;
+  const items = drop.querySelectorAll('.lote-drop-item');
+  const active = _loteDropIdx[idx] ?? -1;
+  items.forEach((item, i) => { item.style.background = i === active ? 'var(--bg)' : ''; });
+  if (active >= 0 && items[active]) items[active].scrollIntoView({ block: 'nearest' });
+}
 
 window.loteMostraDrop = function (idx) {
   const term = document.getElementById('lote-search-' + idx)?.value || '';
@@ -416,6 +504,16 @@ window.loteEscondeDrop = function (idx) {
 window.loteSelecionarProd = function (idx, prodId, prodNome) {
   const p = state.PRODS.find(x => x.id === prodId);
   if (!p) return;
+
+  // Aviso de duplicata (não bloqueante)
+  const existingIds = Array.from(document.querySelectorAll('#lote-rows-wrap > div'))
+    .filter(row => row.dataset.idx !== String(idx))
+    .map(row => document.getElementById('lote-id-' + row.dataset.idx)?.value)
+    .filter(Boolean);
+  if (existingIds.includes(prodId)) {
+    toast(`"${prodNome}" já está na lista`, false);
+  }
+
   document.getElementById('lote-search-' + idx).value = prodNome;
   document.getElementById('lote-id-' + idx).value = prodId;
   document.getElementById('lote-drop-' + idx).style.display = 'none';
@@ -423,16 +521,17 @@ window.loteSelecionarProd = function (idx, prodId, prodNome) {
   document.getElementById('lote-info-' + idx).textContent =
     `Estoque atual: ${p.estoque} ${p.unidade || 'un'} · Último custo: ${fmt(p.custo || 0)} · CM: ${fmt(cm)}`;
   const unitEl = document.getElementById('lote-unit-' + idx);
-  if (cm > 0 && !(parseFloat(unitEl.value) > 0)) {
+  if (cm > 0 && !(loteParseNum(unitEl.value) > 0)) {
     unitEl.value = cm.toFixed(2);
     window.loteCalcFromUnit(idx);
   }
+  // foco sem select (mouse) — select é feito pelo loteKeyProd quando via teclado
   document.getElementById('lote-qtd-' + idx)?.focus();
 };
 
 window.loteCalcFromUnit = function (idx) {
-  const qtd  = parseFloat(document.getElementById('lote-qtd-'  + idx)?.value) || 0;
-  const unit = parseFloat(document.getElementById('lote-unit-' + idx)?.value) || 0;
+  const qtd  = loteParseNum(document.getElementById('lote-qtd-'  + idx)?.value);
+  const unit = loteParseNum(document.getElementById('lote-unit-' + idx)?.value);
   const valEl = document.getElementById('lote-val-' + idx);
   if (valEl) valEl.value = (qtd && unit) ? (qtd * unit).toFixed(2) : '';
   loteVerificarAlerta(idx);
@@ -440,8 +539,8 @@ window.loteCalcFromUnit = function (idx) {
 };
 
 window.loteCalcFromVal = function (idx) {
-  const qtd  = parseFloat(document.getElementById('lote-qtd-' + idx)?.value) || 0;
-  const val  = parseFloat(document.getElementById('lote-val-' + idx)?.value) || 0;
+  const qtd  = loteParseNum(document.getElementById('lote-qtd-' + idx)?.value);
+  const val  = loteParseNum(document.getElementById('lote-val-' + idx)?.value);
   const unitEl = document.getElementById('lote-unit-' + idx);
   if (unitEl && qtd > 0) unitEl.value = (val / qtd).toFixed(2);
   loteVerificarAlerta(idx);
@@ -450,7 +549,7 @@ window.loteCalcFromVal = function (idx) {
 
 function loteVerificarAlerta(idx) {
   const prodId = document.getElementById('lote-id-'   + idx)?.value;
-  const custo  = parseFloat(document.getElementById('lote-unit-' + idx)?.value) || 0;
+  const custo  = loteParseNum(document.getElementById('lote-unit-' + idx)?.value);
   const alertEl = document.getElementById('lote-alert-' + idx);
   if (!alertEl) return;
   if (!prodId || !custo) { alertEl.style.display = 'none'; return; }
@@ -467,23 +566,80 @@ function loteVerificarAlerta(idx) {
 }
 
 function loteAtualizarGrandTotal() {
-  let total = 0;
+  let total = 0, totalUnid = 0, count = 0;
   document.querySelectorAll('#lote-rows-wrap > div').forEach(row => {
-    total += parseFloat(document.getElementById('lote-val-' + row.dataset.idx)?.value) || 0;
+    const i = row.dataset.idx;
+    const hasProd = document.getElementById('lote-id-' + i)?.value;
+    const val = loteParseNum(document.getElementById('lote-val-'  + i)?.value);
+    const qtd = loteParseNum(document.getElementById('lote-qtd-'  + i)?.value);
+    total += val;
+    if (hasProd) { count++; totalUnid += qtd; }
   });
   const el = qs('lote-grand-total');
   if (el) el.textContent = fmt(total);
+  const counterEl = qs('lote-counter');
+  if (counterEl) counterEl.textContent = count ? `${count} produto(s) · ${totalUnid} unid.` : '';
 }
+
+window.loteNumKey = function (e) {
+  if (e.key === ',') {
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart ?? el.value.length;
+    const end   = el.selectionEnd   ?? start;
+    el.value = el.value.slice(0, start) + '.' + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start + 1;
+    el.dispatchEvent(new Event('input'));
+  }
+};
+
+// Atalho F2: abre modal de Entrada em Lote
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'F2' && !e.ctrlKey && !e.altKey) {
+    e.preventDefault();
+    window.abrirModalLote();
+  }
+});
 
 window.loteKeyProd = function (idx, e) {
   const drop = document.getElementById('lote-drop-' + idx);
+  const items = drop ? Array.from(drop.querySelectorAll('.lote-drop-item')) : [];
+  const isOpen = drop && drop.style.display !== 'none' && items.length;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (isOpen) {
+      _loteDropIdx[idx] = ((_loteDropIdx[idx] ?? -1) + 1) % items.length;
+      loteDropUpdateHighlight(idx);
+    }
+    return;
+  }
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (isOpen) {
+      _loteDropIdx[idx] = ((_loteDropIdx[idx] ?? 0) - 1 + items.length) % items.length;
+      loteDropUpdateHighlight(idx);
+    }
+    return;
+  }
   if (e.key === 'Enter' || e.key === 'Tab') {
-    if (drop && drop.style.display !== 'none') {
-      const first = drop.querySelector('div');
-      if (first) { first.dispatchEvent(new MouseEvent('mousedown')); e.preventDefault(); return; }
+    if (isOpen) {
+      const i = (_loteDropIdx[idx] ?? -1);
+      const item = items[i >= 0 ? i : 0];
+      if (item) {
+        item.dispatchEvent(new MouseEvent('mousedown'));
+        e.preventDefault();
+        // pré-selecionar qtd pois veio do teclado
+        setTimeout(() => {
+          const qtdEl = document.getElementById('lote-qtd-' + idx);
+          if (qtdEl) { qtdEl.focus(); qtdEl.select(); }
+        }, 30);
+        return;
+      }
     }
     e.preventDefault();
-    document.getElementById('lote-qtd-' + idx)?.focus();
+    const qtdEl = document.getElementById('lote-qtd-' + idx);
+    if (qtdEl) { qtdEl.focus(); qtdEl.select(); }
   }
 };
 
@@ -494,7 +650,8 @@ window.loteKeyField = function (idx, field, e) {
     const pos = order.indexOf(field);
     if (pos < order.length - 1) {
       e.preventDefault();
-      document.getElementById('lote-' + order[pos + 1] + '-' + idx)?.focus();
+      const nextEl = document.getElementById('lote-' + order[pos + 1] + '-' + idx);
+      if (nextEl) { nextEl.focus(); nextEl.select(); }
     } else if (e.key === 'Enter') {
       e.preventDefault();
       loteAddLinha();
@@ -510,8 +667,8 @@ window.revisarLote = function () {
     const idx     = row.dataset.idx;
     const prodId  = document.getElementById('lote-id-'     + idx)?.value;
     const prodNome= document.getElementById('lote-search-' + idx)?.value;
-    const qtd     = parseFloat(document.getElementById('lote-qtd-'  + idx)?.value) || 0;
-    const custo   = parseFloat(document.getElementById('lote-unit-' + idx)?.value) || 0;
+    const qtd     = loteParseNum(document.getElementById('lote-qtd-'  + idx)?.value);
+    const custo   = loteParseNum(document.getElementById('lote-unit-' + idx)?.value);
     if (!prodId)   { toast(`Linha ${itens.length + 1}: selecione um produto`, true); return; }
     if (qtd <= 0)  { toast(`"${prodNome}": informe a quantidade`, true); return; }
     if (custo <= 0){ toast(`"${prodNome}": informe o custo unitário`, true); return; }
@@ -557,9 +714,9 @@ window.salvarLote = async function () {
     return {
       prodId:   document.getElementById('lote-id-'     + idx)?.value,
       prodNome: document.getElementById('lote-search-' + idx)?.value,
-      qtd:      parseFloat(document.getElementById('lote-qtd-'  + idx)?.value) || 0,
-      custo:    parseFloat(document.getElementById('lote-unit-' + idx)?.value) || 0,
-      valor:    parseFloat(document.getElementById('lote-val-'  + idx)?.value) || 0,
+      qtd:      loteParseNum(document.getElementById('lote-qtd-'  + idx)?.value),
+      custo:    loteParseNum(document.getElementById('lote-unit-' + idx)?.value),
+      valor:    loteParseNum(document.getElementById('lote-val-'  + idx)?.value),
     };
   }).filter(it => it.prodId && it.qtd > 0 && it.custo > 0);
 

@@ -518,7 +518,10 @@ tbody tr:hover td{background:var(--surface2)}
       <button class="btn btn-sm" onclick="loteAddLinha()" style="margin-top:6px;width:100%">+ Adicionar produto</button>
 
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
-        <span style="font-size:14px;color:var(--text2)">Total do lote</span>
+        <div>
+          <span style="font-size:14px;color:var(--text2)">Total do lote</span>
+          <span id="lote-counter" style="font-size:12px;color:var(--text3);margin-left:10px"></span>
+        </div>
         <span id="lote-grand-total" style="font-size:20px;font-weight:700;color:var(--blue)">R$ 0,00</span>
       </div>
 

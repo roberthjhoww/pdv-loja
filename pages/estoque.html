@@ -9,12 +9,18 @@
   <div class="card mb12">
     <div class="card-title">Entrada de estoque</div>
     <div class="row">
-      <div class="field"><label>Produto</label><select id="ent-prod"><option value="">Selecione...</option></select></div>
-      <div class="field" style="max-width:80px"><label>Qtd</label><input type="number" id="ent-qtd" min="1" value="1"></div>
-      <div class="field" style="max-width:110px"><label>Custo unit. R$</label><input type="number" id="ent-custo" placeholder="0,00" step="0.01"></div>
+      <div class="field" style="position:relative;min-width:220px">
+        <label>Produto</label>
+        <input type="text" id="ent-prod-search" placeholder="Buscar por nome ou código…" autocomplete="off"
+               oninput="entBusca()" onfocus="entMostraDrop()" onblur="entEscondeDrop()" onkeydown="entKeyProd(event)">
+        <input type="hidden" id="ent-prod">
+        <div id="ent-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);max-height:200px;overflow-y:auto;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,.12)"></div>
+      </div>
+      <div class="field" style="max-width:80px"><label>Qtd</label><input type="text" inputmode="decimal" id="ent-qtd" value="1" onkeydown="entNumKey(event)"></div>
+      <div class="field" style="max-width:110px"><label>Custo unit. R$</label><input type="text" inputmode="decimal" id="ent-custo" placeholder="0,00" onkeydown="entNumKey(event)"></div>
       <div style="display:flex;align-items:flex-end;padding-bottom:10px;gap:8px">
         <button class="btn btn-dark" onclick="entradaEstoque()">Registrar entrada</button>
-        <button class="btn" onclick="abrirModalLote()">Entrada em lote</button>
+        <button class="btn" onclick="abrirModalLote()" title="Atalho: F2">Entrada em lote</button>
       </div>
     </div>
   </div>
