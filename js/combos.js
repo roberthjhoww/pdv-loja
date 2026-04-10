@@ -2,28 +2,135 @@ import { state } from './state.js';
 import { fmt, qs, toast } from './utils.js';
 import { collection, addDoc, doc, updateDoc, deleteDoc } from './firebase.js';
 
-export function atualizarSelectCombo() {
-  const sel = qs('cb-item-sel');
-  if (!sel) return;
-  sel.innerHTML = '<option value="">Selecione...</option>' +
-    state.PRODS.map(p =>
-      `<option value="${p.id}" data-custo="${p.custoMedio || p.custo || 0}" data-nome="${p.nome}" data-unid="${p.unidade || 'un'}">[${p.tipo === 'insumo' ? 'Insumo' : 'Produto'}] ${p.nome} — estoque: ${p.estoque} ${p.unidade || 'un'}</option>`
-    ).join('');
+function comboParseNum(val) {
+  return parseFloat((String(val || '')).replace(',', '.')) || 0;
 }
 
+export function atualizarSelectCombo() {
+  // campo substituído por busca com dropdown — sem ação necessária
+}
+
+// ── Busca de item (produto/insumo) no formulário de combo ────────────────────
+window.comboItemBusca = function () {
+  const term = (qs('cb-item-search')?.value || '').toLowerCase();
+  const drop = qs('cb-item-drop');
+  if (!drop) return;
+  if (!term) { drop.style.display = 'none'; return; }
+  const results = state.PRODS.filter(p =>
+    p.nome.toLowerCase().includes(term) ||
+    (p.codigos && p.codigos.some(c => String(c).toLowerCase().includes(term))) ||
+    (p.codigo && String(p.codigo).toLowerCase().includes(term))
+  ).slice(0, 12);
+  if (!results.length) { drop.style.display = 'none'; return; }
+  drop.style.display = '';
+  drop.innerHTML = results.map(p => {
+    const tipo = p.tipo === 'insumo' ? 'Insumo' : 'Produto';
+    const cm   = p.custoMedio || p.custo || 0;
+    return `<div style="padding:8px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)"
+         onmousedown="comboItemSelecionar('${p.id}','${p.nome.replace(/'/g, "\\'")}')"
+         onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+      <span>${p.nome}</span>
+      <span class="badge" style="font-size:10px;margin-left:4px">${tipo}</span>
+      <span style="color:var(--text3);font-size:11px;margin-left:6px">estoque: ${p.estoque} ${p.unidade || 'un'} · CM: ${fmt(cm)}</span>
+    </div>`;
+  }).join('');
+};
+
+window.comboItemMostraDrop = function () {
+  const term = qs('cb-item-search')?.value || '';
+  if (term) window.comboItemBusca();
+};
+
+window.comboItemEscondeDrop = function () {
+  setTimeout(() => { const d = qs('cb-item-drop'); if (d) d.style.display = 'none'; }, 150);
+};
+
+window.comboItemSelecionar = function (prodId, prodNome) {
+  qs('cb-item-search').value = prodNome;
+  qs('cb-item-sel').value    = prodId;
+  qs('cb-item-drop').style.display = 'none';
+  qs('cb-item-qtd')?.focus();
+};
+
+window.comboItemKey = function (e) {
+  const drop = qs('cb-item-drop');
+  if (e.key === 'Enter' || e.key === 'Tab') {
+    if (drop && drop.style.display !== 'none') {
+      const first = drop.querySelector('div');
+      if (first) { first.dispatchEvent(new MouseEvent('mousedown')); e.preventDefault(); return; }
+    }
+    e.preventDefault();
+    qs('cb-item-qtd')?.focus();
+  }
+};
+
+window.comboItemQtdKey = function (e) {
+  if (e.key === 'Enter') { e.preventDefault(); window.addItemCombo(); }
+};
+
+window.comboNumKey = function (e) {
+  if (e.key === ',') {
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart ?? el.value.length;
+    const end   = el.selectionEnd   ?? start;
+    el.value = el.value.slice(0, start) + '.' + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = start + 1;
+    el.dispatchEvent(new Event('input'));
+  }
+};
+
+// ── Disponibilidade do combo ─────────────────────────────────────────────────
+function comboDisponibilidade(combo) {
+  const itens = combo.itens || [];
+  if (!itens.length) return { label: 'Disponível', badge: 'badge-ok' };
+  let semEstoque = 0, insuf = 0;
+  for (const ci of itens) {
+    const p = state.PRODS.find(x => x.id === ci.prodId);
+    if (!p) continue;
+    if (p.estoque <= 0) semEstoque++;
+    else if (p.estoque < ci.qtd) insuf++;
+  }
+  if (semEstoque > 0) return { label: 'Indisponível', badge: 'badge-out' };
+  if (insuf > 0)      return { label: 'Estoque baixo', badge: 'badge-low' };
+  return { label: 'Disponível', badge: 'badge-ok' };
+}
+
+window.abrirModalNovoCombo = function () {
+  state.editComboId = null;
+  state.combosItensTemp = [];
+  if (qs('cb-nome'))         qs('cb-nome').value   = '';
+  if (qs('cb-codigo'))       qs('cb-codigo').value = '';
+  if (qs('cb-venda'))        qs('cb-venda').value  = '';
+  if (qs('cb-item-search'))  qs('cb-item-search').value = '';
+  if (qs('cb-item-sel'))     qs('cb-item-sel').value    = '';
+  if (qs('cb-item-qtd'))     qs('cb-item-qtd').value    = 1;
+  if (qs('combo-form-title')) qs('combo-form-title').textContent = 'Novo combo';
+  renderComboItensTemp(); window.calcCustoCombo();
+  qs('modal-combo').classList.add('open');
+  setTimeout(() => qs('cb-nome')?.focus(), 80);
+};
+
 window.addItemCombo = function () {
-  const sel = qs('cb-item-sel');
-  const prodId = sel.value;
+  const prodId = qs('cb-item-sel')?.value;
   if (!prodId) { toast('Selecione um item', true); return; }
-  const qtd  = parseFloat(qs('cb-item-qtd').value) || 1;
-  const opt  = sel.options[sel.selectedIndex];
-  const custo = parseFloat(opt.dataset.custo) || 0;
-  const nome  = opt.dataset.nome;
-  const unid  = opt.dataset.unid;
+  const p    = state.PRODS.find(x => x.id === prodId);
+  if (!p) return;
+  const qtd  = comboParseNum(qs('cb-item-qtd').value) || 1;
+  const custo = p.custoMedio || p.custo || 0;
+  const nome  = p.nome;
+  const unid  = p.unidade || 'un';
+
+  // Aviso de estoque zerado (não bloqueante)
+  if (p.estoque <= 0) toast(`"${nome}" está sem estoque`, false);
+
   const ex = state.combosItensTemp.find(x => x.prodId === prodId);
   if (ex) { ex.qtd += qtd; }
   else state.combosItensTemp.push({ prodId, nome, qtd, custo, unid });
-  qs('cb-item-sel').value = ''; qs('cb-item-qtd').value = 1;
+
+  qs('cb-item-sel').value = '';
+  qs('cb-item-search').value = '';
+  qs('cb-item-qtd').value = 1;
   renderComboItensTemp(); window.calcCustoCombo();
 };
 
@@ -33,15 +140,19 @@ function renderComboItensTemp() {
   if (!state.combosItensTemp.length) { el.innerHTML = '<div class="empty" style="padding:12px">Nenhum item adicionado</div>'; return; }
   el.innerHTML = state.combosItensTemp.map((ci, i) => `
     <div class="combo-item-row">
-      <span style="flex:1">${ci.nome}</span>
-      <input type="number" value="${ci.qtd}" min="0.01" step="0.01" style="width:60px;font-size:13px;padding:3px 5px" onchange="updateQtdCombo(${i},this.value)">
+      <span style="flex:1">
+        ${ci.nome}
+        <span style="font-size:11px;color:var(--text3);margin-left:4px">${fmt(ci.custo)}/un</span>
+      </span>
+      <input type="text" inputmode="decimal" value="${ci.qtd}" style="width:60px;font-size:13px;padding:3px 5px"
+             onchange="updateQtdCombo(${i},this.value)" onkeydown="comboNumKey(event)">
       <span style="font-family:var(--mono);font-size:13px;color:var(--text3);min-width:64px;text-align:right">${fmt(ci.custo * ci.qtd)}</span>
       <button class="btn btn-sm btn-red" onclick="rmItemCombo(${i})">×</button>
     </div>`).join('');
 }
 
 window.updateQtdCombo = function (i, v) {
-  state.combosItensTemp[i].qtd = parseFloat(v) || 1;
+  state.combosItensTemp[i].qtd = comboParseNum(v) || 1;
   renderComboItensTemp(); window.calcCustoCombo();
 };
 window.rmItemCombo = function (i) {
@@ -50,7 +161,7 @@ window.rmItemCombo = function (i) {
 
 window.calcCustoCombo = function () {
   const custo = state.combosItensTemp.reduce((a, ci) => a + ci.custo * ci.qtd, 0);
-  const venda = parseFloat((qs('cb-venda') || { value: '0' }).value) || 0;
+  const venda = comboParseNum((qs('cb-venda') || { value: '0' }).value);
   const margem = venda > 0 ? Math.round((venda - custo) / venda * 100) : 0;
   if (qs('cb-custo-total')) qs('cb-custo-total').textContent = fmt(custo);
   if (qs('cb-margem')) {
@@ -62,7 +173,7 @@ window.calcCustoCombo = function () {
 window.salvarCombo = async function () {
   const nome   = qs('cb-nome').value.trim();
   const codigo = qs('cb-codigo').value.trim();
-  const venda  = parseFloat(qs('cb-venda').value) || 0;
+  const venda  = comboParseNum(qs('cb-venda').value);
   if (!nome)    { toast('Informe o nome', true); return; }
   if (venda <= 0) { toast('Informe o preço de venda', true); return; }
   if (!state.combosItensTemp.length) { toast('Adicione pelo menos um item', true); return; }
@@ -81,18 +192,16 @@ window.salvarCombo = async function () {
       state.COMBOS.push({ id: ref.id, ...data });
     }
     toast('Combo salvo!');
-    window.cancelEditCombo(); renderCombos();
+    qs('modal-combo')?.classList.remove('open');
+    state.editComboId = null; state.combosItensTemp = [];
+    renderCombos();
     import('./pdv.js').then(m => m.renderPDV());
   } catch (e) { toast('Erro: ' + e.message, true); }
 };
 
 window.cancelEditCombo = function () {
   state.editComboId = null; state.combosItensTemp = [];
-  if (qs('cb-nome'))   qs('cb-nome').value   = '';
-  if (qs('cb-codigo')) qs('cb-codigo').value = '';
-  if (qs('cb-venda'))  qs('cb-venda').value  = '';
-  if (qs('combo-form-title')) qs('combo-form-title').textContent = 'Novo combo';
-  renderComboItensTemp(); window.calcCustoCombo();
+  qs('modal-combo')?.classList.remove('open');
 };
 
 export function renderCombos() {
@@ -103,16 +212,35 @@ export function renderCombos() {
   if (!tb) return;
   if (!lista.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">Nenhum combo cadastrado</td></tr>'; return; }
   tb.innerHTML = lista.map(c => {
-    const margem   = c.venda > 0 ? Math.round((c.venda - c.custoTotal) / c.venda * 100) : 0;
-    const itensStr = (c.itens || []).map(ci => `${ci.nome} (${ci.qtd}${ci.unid || ''})`).join(', ');
+    const margem = c.venda > 0 ? Math.round((c.venda - c.custoTotal) / c.venda * 100) : 0;
+    const itens  = c.itens || [];
+    const disp   = comboDisponibilidade(c);
+
+    // Componentes: primeiros 2 em linha, restante expansível
+    const resumo  = itens.slice(0, 2).map(ci => `${ci.nome} (${ci.qtd}${ci.unid || ''})`).join(', ');
+    const temMais = itens.length > 2;
+    const detalhe = itens.map(ci => `
+      <div style="padding:2px 0;font-size:12px;color:var(--text2)">
+        · ${ci.nome}
+        <span style="font-family:var(--mono);color:var(--text3);margin-left:4px">${ci.qtd}${ci.unid || ''} · ${fmt(ci.custo)}/un · <strong>${fmt(ci.custo * ci.qtd)}</strong></span>
+      </div>`).join('');
+
     return `<tr>
-      <td><strong>${c.nome}</strong><br><span style="font-family:var(--mono);font-size:13px;color:var(--text3)">${c.codigo || '—'}</span></td>
-      <td style="font-size:13px;color:var(--text3);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${itensStr}">${itensStr}</td>
+      <td>
+        <strong>${c.nome}</strong>
+        <span class="badge ${disp.badge}" style="font-size:10px;margin-left:4px">${disp.label}</span>
+        <br><span style="font-family:var(--mono);font-size:13px;color:var(--text3)">${c.codigo || '—'}</span>
+      </td>
+      <td style="font-size:13px;color:var(--text3);max-width:180px">
+        <div>${resumo}${temMais ? ` <button class="btn btn-sm" id="btn-cexp-${c.id}" onclick="toggleComboItens('${c.id}')" style="padding:1px 5px;font-size:11px">+${itens.length - 2} ▶</button>` : ''}</div>
+        <div id="combo-itens-det-${c.id}" style="display:none;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">${detalhe}</div>
+      </td>
       <td style="font-family:var(--mono);color:var(--red)">${fmt(c.custoTotal)}</td>
       <td style="font-family:var(--mono);color:var(--green);font-weight:500">${fmt(c.venda)}</td>
       <td style="font-family:var(--mono);color:${margem > 30 ? 'var(--green)' : 'var(--amber)'}">${margem}%</td>
-      <td style="display:flex;gap:6px">
+      <td style="white-space:nowrap">
         <button class="btn btn-sm" onclick="editarCombo('${c.id}')">Editar</button>
+        <button class="btn btn-sm" onclick="duplicarCombo('${c.id}')" title="Duplicar combo">⧉</button>
         <button class="btn btn-sm btn-red" onclick="excluirCombo('${c.id}')">×</button>
       </td>
     </tr>`;
@@ -120,17 +248,44 @@ export function renderCombos() {
 }
 window.renderCombos = renderCombos;
 
+window.toggleComboItens = function (id) {
+  const det = document.getElementById('combo-itens-det-' + id);
+  const btn = document.getElementById('btn-cexp-' + id);
+  if (!det) return;
+  const open = det.style.display !== 'none';
+  det.style.display = open ? 'none' : '';
+  if (btn) btn.textContent = open ? `+${(det.querySelectorAll('div').length)} ▶` : '▲ ocultar';
+};
+
+function _abrirModalCombo(c, titulo) {
+  state.combosItensTemp = [...(c.itens || []).map(ci => ({ ...ci }))];
+  if (qs('cb-nome'))         qs('cb-nome').value   = c.nome;
+  if (qs('cb-codigo'))       qs('cb-codigo').value = c.codigo || '';
+  if (qs('cb-venda'))        qs('cb-venda').value  = c.venda;
+  if (qs('cb-item-search'))  qs('cb-item-search').value = '';
+  if (qs('cb-item-sel'))     qs('cb-item-sel').value    = '';
+  if (qs('cb-item-qtd'))     qs('cb-item-qtd').value    = 1;
+  if (qs('combo-form-title')) qs('combo-form-title').textContent = titulo;
+  renderComboItensTemp(); window.calcCustoCombo();
+  qs('modal-combo').classList.add('open');
+  // scroll do modal ao topo
+  const modal = qs('modal-combo')?.querySelector('.modal');
+  if (modal) modal.scrollTop = 0;
+}
+
 window.editarCombo = function (id) {
   const c = state.COMBOS.find(x => x.id === id);
   if (!c) return;
   state.editComboId = id;
-  state.combosItensTemp = [...(c.itens || []).map(ci => ({ ...ci }))];
-  if (qs('cb-nome'))   qs('cb-nome').value   = c.nome;
-  if (qs('cb-codigo')) qs('cb-codigo').value = c.codigo || '';
-  if (qs('cb-venda'))  qs('cb-venda').value  = c.venda;
-  if (qs('combo-form-title')) qs('combo-form-title').textContent = 'Editar combo';
-  renderComboItensTemp(); window.calcCustoCombo();
-  window.goTo('combos', document.querySelector('.nav-item:nth-child(9)'));
+  _abrirModalCombo(c, 'Editar combo');
+};
+
+window.duplicarCombo = function (id) {
+  const c = state.COMBOS.find(x => x.id === id);
+  if (!c) return;
+  state.editComboId = null;
+  _abrirModalCombo({ ...c, nome: c.nome + ' (cópia)', codigo: '' }, 'Novo combo');
+  toast(`Combo "${c.nome}" duplicado — ajuste e salve`);
 };
 
 window.excluirCombo = async function (id) {
