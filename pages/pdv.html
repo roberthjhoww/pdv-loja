@@ -32,10 +32,10 @@
           <div class="sep" style="margin:7px 0"></div>
           <div class="total-row"><span style="font-size:16px;font-weight:500">Total</span><span class="total-grand" id="c-total">R$ 0,00</span></div>
           <div class="pag-tabs">
-            <div class="pag-tab sel" id="pt-dinheiro" onclick="selPag('dinheiro')">Dinheiro</div>
-            <div class="pag-tab" id="pt-credito" onclick="selPag('credito')">Crédito</div>
-            <div class="pag-tab" id="pt-debito" onclick="selPag('debito')">Débito</div>
-            <div class="pag-tab" id="pt-pix" onclick="selPag('pix')">PIX</div>
+            <div class="pag-tab sel" id="pt-dinheiro" tabindex="0" onclick="selPag('dinheiro')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selPag('dinheiro')}">Dinheiro</div>
+            <div class="pag-tab" id="pt-credito"  tabindex="0" onclick="selPag('credito')"  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selPag('credito')}">Crédito</div>
+            <div class="pag-tab" id="pt-debito"   tabindex="0" onclick="selPag('debito')"   onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selPag('debito')}">Débito</div>
+            <div class="pag-tab" id="pt-pix"      tabindex="0" onclick="selPag('pix')"      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selPag('pix')}">PIX</div>
           </div>
           <div id="troco-wrap">
             <div class="troco-rapido">

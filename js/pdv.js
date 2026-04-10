@@ -61,6 +61,7 @@ export function renderPDV() {
     const isFav = state.FAVS.has(p.id);
     const div = document.createElement('div');
     div.className = 'prod-tile' + (out ? ' out' : '') + (low && !out ? ' low-stock' : '');
+    div.setAttribute('tabindex', '-1');
     div.dataset.id = p.id; div.dataset.tipo = 'prod';
     const stockTxt = out ? 'SEM ESTOQUE' : low ? ('⚠ ' + p.estoque + ' ' + (p.unidade || 'un')) : p.estoque + ' ' + (p.unidade || 'un');
     div.innerHTML =
@@ -75,6 +76,7 @@ export function renderPDV() {
         addCarrinho(p.id);
       });
     }
+    div.addEventListener('keydown', tileKeydown);
     div.querySelector('.fav-star').addEventListener('click', function (e) {
       e.stopPropagation(); toggleFav(p.id, e);
     });
@@ -86,6 +88,7 @@ export function renderPDV() {
     const semEstoque = comboSemEstoque(c);
     const div = document.createElement('div');
     div.className = 'prod-tile' + (semEstoque ? ' out' : '');
+    div.setAttribute('tabindex', '-1');
     div.dataset.id = c.id; div.dataset.tipo = 'combo';
     div.innerHTML =
       '<button class="fav-star' + (isFav ? ' active' : '') + '" title="Favoritar">★</button>' +
@@ -99,6 +102,7 @@ export function renderPDV() {
         addComboCarrinho(c.id);
       });
     }
+    div.addEventListener('keydown', tileKeydown);
     div.querySelector('.fav-star').addEventListener('click', function (e) {
       e.stopPropagation(); toggleFav('combo_' + c.id, e);
     });
@@ -113,8 +117,54 @@ window.barcodePDV = function (e) {
     const q = qs('pdv-search').value.trim();
     const p = state.PRODS.find(x => x.codigo === q || (x.codigos || []).includes(q));
     if (p) { addCarrinho(p.id); qs('pdv-search').value = ''; renderPDV(); }
+  } else if (e.key === 'Escape') {
+    qs('pdv-search').value = '';
+    renderPDV();
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    const first = document.querySelector('#pdv-grid .prod-tile');
+    if (first) first.focus();
   }
 };
+
+// ── Navegação por teclado no grid ─────────────────────────────────────────────
+function tileKeydown(e) {
+  const allTiles = () => [...document.querySelectorAll('#pdv-grid .prod-tile')];
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    this.click();
+    const s = qs('pdv-search');
+    if (s) { s.focus(); s.select(); }
+  } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const all = allTiles(), idx = all.indexOf(this);
+    if (idx < all.length - 1) all[idx + 1].focus();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const all = allTiles(), idx = all.indexOf(this);
+    if (idx > 0) all[idx - 1].focus();
+    else { const s = qs('pdv-search'); if (s) { s.focus(); s.select(); } }
+  } else if (e.key === 'Escape') {
+    const s = qs('pdv-search');
+    if (s) { s.focus(); s.select(); }
+  }
+}
+
+// ── Atalhos globais do PDV ────────────────────────────────────────────────────
+document.addEventListener('keydown', function (e) {
+  const page = document.getElementById('page-pdv');
+  if (!page || !page.classList.contains('active')) return;
+  if (e.key === 'F2') {
+    e.preventDefault();
+    finalizarVenda();
+    return;
+  }
+  if (e.altKey) {
+    const map = { d: 'dinheiro', c: 'credito', b: 'debito', p: 'pix' };
+    const f = map[e.key.toLowerCase()];
+    if (f) { e.preventDefault(); window.selPag(f); }
+  }
+});
 
 // ── Combo helpers ─────────────────────────────────────────────────────────────
 export function comboSemEstoque(c) {

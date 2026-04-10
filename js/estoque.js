@@ -596,6 +596,8 @@ window.loteNumKey = function (e) {
 // Atalho F2: abre modal de Entrada em Lote
 document.addEventListener('keydown', function (e) {
   if (e.key === 'F2' && !e.ctrlKey && !e.altKey) {
+    const page = document.getElementById('page-estoque');
+    if (!page || !page.classList.contains('active')) return;
     e.preventDefault();
     window.abrirModalLote();
   }
